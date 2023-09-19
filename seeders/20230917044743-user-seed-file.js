@@ -1,0 +1,50 @@
+'use strict';
+const bcrypt = require('bcryptjs')
+const faker = require('faker')
+const { BCRYPT_SALT_LENGTH , STUDENT_AMOUNT, TEACHER_AMOUNT, INTRODUCTION_LENGTH, NATION } = require('../helpers/seeder-helpers')
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const DEFAULT_PASSWORD = '12345678'
+    const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
+
+    await queryInterface.bulkInsert('Users', [{
+      name: 'root',
+      email: 'root@example.com',
+      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
+      introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
+      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=100`,
+      nation: NATION,
+      role: 'admin',
+      created_at: new Date(),
+      updated_at: new Date()
+    },
+    ...Array.from({ length: STUDENT_AMOUNT }, (_, i) => ({
+      name: `user${ i + 1 }`,
+      email: `user${ i + 1 }@example.com`,
+      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
+      introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
+      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 1 }`,
+      nation: NATION,
+      role: 'user',
+      created_at: new Date(),
+      updated_at: new Date()
+    })),
+    ...Array.from({ length: TEACHER_AMOUNT }, (_, i) => ({
+      name: `user${ i + 100 }`,
+      email: `user${ i + 100 }@example.com`,
+      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
+      introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
+      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 100 }`,
+      nation: NATION,
+      role: 'teacher',
+      created_at: new Date(),
+      updated_at: new Date()
+    }))
+  ])
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('Users', null, {})
+  }
+};

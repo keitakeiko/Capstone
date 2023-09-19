@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     availableTime: DataTypes.DATE,
     classDetail: DataTypes.TEXT,
     classUrl: DataTypes.STRING,
-    avatar: DataTypes.STRING
   },{
     sequelize,
     modelName: 'Class',
