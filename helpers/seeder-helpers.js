@@ -1,7 +1,6 @@
 const faker = require('faker')
 
 module.exports = {
-
   BCRYPT_SALT_LENGTH : 10,
   STUDENT_AMOUNT : 5,
   TEACHER_AMOUNT : 10,

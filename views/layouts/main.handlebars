@@ -7,17 +7,31 @@
   <title>Tutor Web</title>
   <script src="https://kit.fontawesome.com/ddbd4af4ba.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+  <link rel="stylesheet" href="/stylesheets/homePage.css">
 </head>
 
 <body>
   <header>
     <nav class="navbar navbar-light bg-light">
-      <div class="container-fluid">
+
+      <div class="container-fluid d-flex justify-content-between align-items-center">
         <a class="navbar-brand" href="/">
           <i class="fa-brands fa-pagelines fa-2xl" style="color: #2a9349; margin-right: 10px;"></i>
           Tutor Web
         </a>
+        <div class="d-flex">
+          <a href="/users/:id/applyTeacher" class="navbar-link">
+            <h5>Name</h5>
+          </a>
+          <a href="/users/:id" class="navbar-link">
+            <h5>Name</h5>
+          </a>
+        </div>
+        <a href="/" class="navbar-link ms-auto">
+          <h5>Log Out</h5>
+        </a>
       </div>
+        
     </nav>
   </header>
 
