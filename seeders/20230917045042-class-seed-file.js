@@ -12,12 +12,13 @@ module.exports = {
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
    
-    // 選擇七天中的一天（0表示星期日，1表示星期一，以此類推）
+    // 7 天, 開課時間 18:00 - 22:00 , 一堂課 30/60 分鐘    
     const getRandomDayOfWeek = () => Math.floor(Math.random() * 7);
     const getRandomEveningHour = () => Math.floor(Math.random() * 5) + 18;
     const getRandomMinuteDuration = () => (Math.random() < 0.5 ? 30 : 60);
     const usedTimeSlots = new Set();
 
+    // 避免選課衝突
     const selectedClasses = [];
 
     for (let i = 0; i < TEACHER_AMOUNT; i++) {
@@ -37,10 +38,10 @@ module.exports = {
       if (!usedTimeSlots.has(availableTime)) {
         selectedClasses.push({
           teacherId: teachers[i].id,
-          className: faker.lorem.sentence(10),
+          className: faker.lorem.sentence(1),
           spendTime: minuteDuration,
-          teachingStyle: faker.lorem.sentence(150),
-          classDetail: faker.lorem.sentence(150),
+          teachingStyle: faker.lorem.sentence(1),
+          classDetail: faker.lorem.sentence(1),
           availableTime,
           classUrl: faker.internet.url(),
           created_at: new Date(),

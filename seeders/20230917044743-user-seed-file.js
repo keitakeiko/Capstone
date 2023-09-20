@@ -26,10 +26,11 @@ module.exports = {
       introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
       avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 1 }`,
       nation: NATION,
-      role: 'user',
+      role: 'user', // student
       created_at: new Date(),
       updated_at: new Date()
     })),
+    // 每個使用者有至少 2 頁（10 篇）老師可以選擇
     ...Array.from({ length: TEACHER_AMOUNT }, (_, i) => ({
       name: `user${ i + 100 }`,
       email: `user${ i + 100 }@example.com`,

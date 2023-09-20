@@ -12,31 +12,35 @@ module.exports = {
       "SELECT id, spendTime FROM Classes;",
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
+
+    // 每個使用者有至少 2 個 Lesson History 可以打分
     await queryInterface.bulkInsert('Enrollments',[
       ...Array.from({ length: STUDENT_AMOUNT * LESSON_PER_STUDENT }, (_, i) =>  ({
       studentId: students[Math.floor(i / LESSON_PER_STUDENT)].id,
       classId: classes[Math.floor(i / TEACHER_AMOUNT)].id,
-      // score:'',
+      // score:'', // integer can't use string
       spendTime:classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
       studentComment: '',
       created_at: new Date(),
       updated_at: new Date()
       }))
       ,
+      // 每個老師有至少 2 個 New Lesson
       ...Array.from({ length: TEACHER_PER_NEWLESSON * TEACHER_AMOUNT }, (_, i) => ({
       studentId: students[Math.floor(Math.random() * STUDENT_AMOUNT)].id,
-      classId: classes[Math.floor(Math.random() * classes.length)].id,
-      spendTime:classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
+      classId: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].id,
+      spendTime:classes[Math.floor(i / TEACHER_PER_NEWLESSON)].spendTime,
       studentComment: '',
       created_at: new Date(),
       updated_at: new Date()
       }))
       ,
+      // 每個老師有至少 2 個過往上課評價
       ...Array.from({ length: TEACHER_PER_COMMENT * TEACHER_AMOUNT }, (_, i) => ({
       studentId: students[Math.floor(Math.random() * STUDENT_AMOUNT)].id,
-      classId: classes[Math.floor(Math.random() * classes.length)].id,
+      classId: classes[Math.floor(i / TEACHER_PER_COMMENT)].id,
       score: Math.floor(Math.random() * (SCORELIMIT + 1)),
-      spendTime:classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
+      spendTime:classes[Math.floor(i / TEACHER_PER_COMMENT)].spendTime,
       studentComment: faker.lorem.sentence(1),
       created_at: new Date(),
       updated_at: new Date()
