@@ -5,3 +5,28 @@
   color: inherit;
   /* 使用默认文本颜色 */
 }
+
+.navbar-link h5 {
+  margin: o;
+  padding: 8px;
+}
+
+.card-text {
+  max-height: 5em;
+  /* 設定最大高度，相當於大約3行文字的高度 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.btn-score {
+  margin: 0;
+  display: inline-block;
+  /* float: right; */
+  position: relative;
+}
+
+.teacherImg {
+  border-radius: 50%;
+}

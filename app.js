@@ -3,11 +3,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express')
-const app = express()
 const exphbs = require('express-handlebars')
 
 const routes = require('./routes') // 預設會找底下 index.js
-const PORT = 3000
+const app = express()
+const PORT = process.env.PORT || 3000
 
 // set view engine
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
@@ -19,3 +19,6 @@ app.use(routes)
 
 // 監聽函式
 app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
+
+
+module.exports = app

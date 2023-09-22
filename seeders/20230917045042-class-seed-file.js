@@ -1,7 +1,7 @@
 'use strict';
 
 const faker = require('faker');
-const { TEACHER_AMOUNT } = require('../helpers/seeder-helpers')
+const { TEACHER_AMOUNT, CLASSNAME, INTRODUCTION_LENGTH } = require('../helpers/seeder-helpers')
 const dayjs = require('dayjs')
 
 module.exports = {
@@ -38,10 +38,10 @@ module.exports = {
       if (!usedTimeSlots.has(availableTime)) {
         selectedClasses.push({
           teacherId: teachers[i].id,
-          className: faker.lorem.sentence(1),
+          className: faker.lorem.words(CLASSNAME),
           spendTime: minuteDuration,
-          teachingStyle: faker.lorem.sentence(1),
-          classDetail: faker.lorem.sentence(1),
+          teachingStyle: faker.lorem.sentence(INTRODUCTION_LENGTH),
+          classDetail: faker.lorem.sentence(INTRODUCTION_LENGTH),
           availableTime,
           classUrl: faker.internet.url(),
           created_at: new Date(),

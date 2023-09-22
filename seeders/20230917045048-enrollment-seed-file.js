@@ -19,7 +19,7 @@ module.exports = {
       studentId: students[Math.floor(i / LESSON_PER_STUDENT)].id,
       classId: classes[Math.floor(i / TEACHER_AMOUNT)].id,
       // score:'', // integer can't use string
-      spendTime:classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
+      spendTime: classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
       studentComment: '',
       created_at: new Date(),
       updated_at: new Date()
@@ -29,7 +29,7 @@ module.exports = {
       ...Array.from({ length: TEACHER_PER_NEWLESSON * TEACHER_AMOUNT }, (_, i) => ({
       studentId: students[Math.floor(Math.random() * STUDENT_AMOUNT)].id,
       classId: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].id,
-      spendTime:classes[Math.floor(i / TEACHER_PER_NEWLESSON)].spendTime,
+      spendTime: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].spendTime,
       studentComment: '',
       created_at: new Date(),
       updated_at: new Date()
@@ -40,8 +40,8 @@ module.exports = {
       studentId: students[Math.floor(Math.random() * STUDENT_AMOUNT)].id,
       classId: classes[Math.floor(i / TEACHER_PER_COMMENT)].id,
       score: Math.floor(Math.random() * (SCORELIMIT + 1)),
-      spendTime:classes[Math.floor(i / TEACHER_PER_COMMENT)].spendTime,
-      studentComment: faker.lorem.sentence(1),
+      spendTime: classes[Math.floor(i / TEACHER_PER_COMMENT)].spendTime,
+      studentComment: faker.lorem.sentence(INTRODUCTION_LENGTH),
       created_at: new Date(),
       updated_at: new Date()
       }))
