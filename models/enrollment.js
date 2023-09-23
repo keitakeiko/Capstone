@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   Enrollment.init({
     studentId: DataTypes.INTEGER,
     classId: DataTypes.INTEGER,
-    score: DataTypes.INTEGER,
+    score: DataTypes.FLOAT,
     classTime: DataTypes.DATE,
     studentComment: DataTypes.STRING
   }, {

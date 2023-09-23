@@ -10,6 +10,7 @@ module.exports = {
 
     await queryInterface.bulkInsert('Users', [{
       name: 'root',
+      account: 'root',
       email: 'root@example.com',
       password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
       introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
@@ -21,6 +22,7 @@ module.exports = {
     },
     ...Array.from({ length: STUDENT_AMOUNT }, (_, i) => ({
       name: `user${ i + 1 }`,
+      account: `user${ i + 1 }`,
       email: `user${ i + 1 }@example.com`,
       password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
       introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
@@ -33,6 +35,7 @@ module.exports = {
     // 每個使用者有至少 2 頁（10 篇）老師可以選擇
     ...Array.from({ length: TEACHER_AMOUNT }, (_, i) => ({
       name: `user${ i + 100 }`,
+      account: `user${ i + 100 }`,
       email: `user${ i + 100 }@example.com`,
       password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
       introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
