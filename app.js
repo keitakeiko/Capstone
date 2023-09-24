@@ -10,7 +10,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 // set view engine
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
+app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: exphbs }))
 app.set('view engine', 'handlebars')
 
 // 所有路由都會先經過 app.use
