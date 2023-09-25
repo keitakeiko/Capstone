@@ -7,16 +7,21 @@ const { getAbbreviationCountry } = require('../helpers/handlebars-helpers')
 const userController = {
 
   getUserPage: (req, res) => {
-    res.render('users/userPage')
+    return res.render('users/userPage')
   },
   getTeacherPage: (req, res) => {
     const NATION = 'Thailand'
     const abbr = getAbbreviationCountry(NATION)
-    res.render('users/teacherPage', {abbr: abbr})
+    return  res.render('users/teacherPage', {abbr: abbr})
   },
   getUserClassPage: (req, res) => {
-    res.render('users/reserve-class')
+    return res.render('users/reserve-class')
+  },
+  getTeacherEditPage: (req, res) => {
+    return res.render('users/teacherEditPage')
   }
+    
+  
 }
 
 module.exports = {
