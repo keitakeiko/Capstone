@@ -5,7 +5,7 @@ const { User, sequelize } = require('../models')
 const { getAbbreviationCountry } = require('../helpers/handlebars-helpers')
 
 const userController = {
-
+  getTeachers: (req, res) => res.render('index'),
   getUserPage: (req, res) => {
     return res.render('users/userPage')
   },
@@ -14,12 +14,15 @@ const userController = {
     const abbr = getAbbreviationCountry(NATION)
     return  res.render('users/teacherPage', {abbr: abbr})
   },
-  getUserClassPage: (req, res) => {
+  getTeacherEditPage: (req, res) => {
+    return res.render('users/checkTeacherPage')
+  },
+  getReserveClassPage: (req, res) => {
     return res.render('users/reserve-class')
   },
-  getTeacherEditPage: (req, res) => {
-    return res.render('users/teacherEditPage')
-  }
+  getApplyTeacherPage: (req, res) => 
+    res.render('users/applyTeacher'),
+  getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage')
     
   
 }
