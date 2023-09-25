@@ -13,6 +13,9 @@ const userController = {
     const NATION = 'Thailand'
     const abbr = getAbbreviationCountry(NATION)
     res.render('users/teacherPage', {abbr: abbr})
+  },
+  getUserClassPage: (req, res) => {
+    res.render('users/reserve-class')
   }
 }
 
