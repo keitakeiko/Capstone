@@ -40,6 +40,7 @@ module.exports = {
           teacherId: teachers[i].id,
           className: faker.lorem.words(CLASSNAME),
           spendTime: minuteDuration,
+          introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
           teachingStyle: faker.lorem.sentence(INTRODUCTION_LENGTH),
           classDetail: faker.lorem.sentence(INTRODUCTION_LENGTH),
           availableTime,

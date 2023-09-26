@@ -14,15 +14,16 @@ const userController = {
     const abbr = getAbbreviationCountry(NATION)
     return  res.render('users/teacherPage', {abbr: abbr})
   },
-  getTeacherEditPage: (req, res) => {
-    return res.render('users/checkTeacherPage')
-  },
+  getUserEditPage: (req, res) => res.render('users/userEditPage'),
   getReserveClassPage: (req, res) => {
     return res.render('users/reserve-class')
   },
   getApplyTeacherPage: (req, res) => 
     res.render('users/applyTeacher'),
-  getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage')
+  getTeacherEditPage: (req, res) => {
+    return res.render('users/checkTeacherPage')
+  },
+   getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage')
     
   
 }
