@@ -7,6 +7,6 @@ const { userController } = require('../controllers/user-controller')
 
 router.use('/users', users)
 router.use('/admin', admin)
-router.use('/', userController.getTeachers)
+router.use('/', userController.getHomeTeachers)
 
 module.exports = router
