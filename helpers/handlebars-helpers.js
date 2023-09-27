@@ -1,6 +1,6 @@
 const countryCodes = require('country-codes-list')
 const countryCodesMap = countryCodes.customList("countryNameEn", "{countryCode}");
-// console.log(countryCodesMap) 得到 國名 : 縮寫
+// console.log(countryCodesMap) 得到 { 國名 : 縮寫 }
 
 module.exports = {
   ifCond: function(a, b, options) {

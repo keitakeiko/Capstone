@@ -2,7 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { userController } = require('../../controllers/user-controller')
 
-
+router.get('/signup', userController.getSignUPpage)
+router.post('/signup', userController.postSignUp)
 router.get('/:id/edit', userController.getUserEditPage)
 router.get('/:id/checkTeacherPage', userController.getCheckTeacherPage)
 router.get('/:id/applyTeacher', userController.getApplyTeacherPage)

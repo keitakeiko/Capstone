@@ -1,57 +1,80 @@
 const bcrypt = require('bcryptjs')
 
 const { User, Class, Enrollment, sequelize } = require('../models')
-const { getAbbreviationCountry } = require('../helpers/handlebars-helpers')
+const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
+// const { noExtendLeft } = require('sequelize/types/lib/operators')
 const BCRYPT_SALT_LENGTH = 10
 
 const userController = {
-  getSignUPpage: (req, res) => {
-    res.render('users/signup')
-  },
-  postSignUp: async (req, res) => {
-    const DEFAULT_PASSWORD = '12345678'
-    const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
 
-    await queryInterface.bulkInsert('Users', [{
-      name: 'root',
-      account: 'root',
-      email: 'root@example.com',
-      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
-      about_me: faker.lorem.sentence(INTRODUCTION_LENGTH),
-      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=100`,
-      nation: NATION,
-      role: 'admin',
-      created_at: new Date(),
-      updated_at: new Date()
-    },
-    ...Array.from({ length: STUDENT_AMOUNT }, (_, i) => ({
-      name: `user${ i + 1 }`,
-      account: `user${ i + 1 }`,
-      email: `user${ i + 1 }@example.com`,
-      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
-      about_me: faker.lorem.sentence(INTRODUCTION_LENGTH),
-      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 1 }`,
-      nation: NATION,
-      role: 'user', // student
-      created_at: new Date(),
-      updated_at: new Date()
-    })),
-    // 每個使用者有至少 2 頁（10 篇）老師可以選擇
-    ...Array.from({ length: TEACHER_AMOUNT }, (_, i) => ({
-      name: `user${ i + TEACHER_ID_START }`,
-      account: `user${ i + TEACHER_ID_START }`,
-      email: `user${ i + TEACHER_ID_START }@example.com`,
-      password: bcrypt.hashSync(DEFAULT_PASSWORD, salt),
-      about_me: faker.lorem.sentence(INTRODUCTION_LENGTH),
-      avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 100 }`,
-      nation: NATION,
-      role: 'teacher',
-      created_at: new Date(),
-      updated_at: new Date()
-    }))
-  ])
+  getSignUPpage: (req, res, nex) => {
+    try {
+      return res.render('users/signup')
+    } catch {
+      return next(err)
+    }
+  } ,
+  postSignUp: async (req, res, next) => {
+    try{
+      const {
+        name,
+        account,
+        email,
+        password,
+        checkPassword,
+        aboutMe,
+        avatar,
+        nation
+      } = req.body
+
+      const errors = []
+      const [ userEmail, userAccount ] = await Promise.all([
+        User.findOne({ where: { email }}),
+        User.findOne({ where: { account }})
+      ])
+
+      if (userEmail) errors.push({ message: 'email 重複註冊'})
+      if (userAccount) errors.push({ message: 'account 重複註冊'})
+
+      if (!account || !email || !password || !checkPassword || !nation || !aboutMe) errors.push({ message: '必填項目未完成'})
+      if (name.length > 50) errors.push({ message: '暱稱不得超過50字'})
+      if (password !== checkPassword) errors.push({ message: '兩次輸入密碼不符'})
+
+      if (errors.length) {
+        return res.render('users/signup', {
+          errors,
+          name,
+          account,
+          email,
+          password,
+          checkPassword,
+          aboutMe,
+          avatar,
+          nation
+        })
+      }
+      const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
+
+      await User.create({
+        name,
+        account,
+        email,
+        password: bcrypt.hashSync(password, salt),
+        aboutMe,
+        avatar,
+        nation
+      })
+
+      req.flash('success_message', '註冊成功')
+
+      return res.redirect('/users/signin')
+    } catch {
+      return next(err)
+    }
   },
-  getHomeTeachers: (req, res) => res.render('index'),
+  getHomeTeachers: (req, res) => {
+    res.render('index')
+  },
   getUserPage: (req, res) => {
     return res.render('users/userPage')
   },

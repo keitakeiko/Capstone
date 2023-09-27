@@ -34,17 +34,23 @@
             <h5>Name</h5>
           </a>
 
-        
-            <a href="/users/:id" class="navbar-link ">
-              <h5>成為老師</h5>
-            </a>
-          
+          {{#unless 'teacher'}}
+          <a href="/users/:id/applyTeacher" class="navbar-link hidden">
+            <h5>成為老師</h5>
+          </a>
+          {{else}}
+          <a href="/users/:id/applyTeacher" class="navbar-link">
+            <h5>成為老師</h5>
+          </a>
+          {{/unless}}
          
         </div>
         
+       
         <a href="/" class="navbar-link ms-auto">
           <h5>Log Out</h5>
         </a>
+       
       </div>
         
     </nav>
