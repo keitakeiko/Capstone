@@ -12,9 +12,9 @@ module.exports = {
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
    
-    // 7 天, 開課時間 18:00 - 22:00 , 一堂課 30/60 分鐘    
+    // 7 天, 開課時間 18:00 - 21:00 , 一堂課 30/60 分鐘    
     const getRandomDayOfWeek = () => Math.floor(Math.random() * 7);
-    const getRandomEveningHour = () => Math.floor(Math.random() * 5) + 18;
+    const getRandomEveningHour = () => Math.floor(Math.random() * 4) + 18;
     const getRandomMinuteDuration = () => (Math.random() < 0.5 ? 30 : 60);
     const usedTimeSlots = new Set();
 

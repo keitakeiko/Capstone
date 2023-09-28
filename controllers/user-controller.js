@@ -2,18 +2,17 @@ const bcrypt = require('bcryptjs')
 
 const { User, Class, Enrollment, sequelize } = require('../models')
 const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
-// const { noExtendLeft } = require('sequelize/types/lib/operators')
 const BCRYPT_SALT_LENGTH = 10
 
 const userController = {
 
-  getSignUPpage: (req, res, nex) => {
+  getSignUpPage: (req, res, nex) => {
     try {
       return res.render('users/signup')
     } catch {
       return next(err)
     }
-  } ,
+  },
   postSignUp: async (req, res, next) => {
     try{
       const {
@@ -71,6 +70,26 @@ const userController = {
     } catch {
       return next(err)
     }
+  },
+  getSignInPage: (req, res, nex) => {
+    try {
+      return res.render('users/signin')
+    } catch {
+      return next(err)
+    }
+  },
+  postSignIn: (req, res, nex) => {
+    try {
+      req.flash('success_message', '成功登入')
+      return res.render('/')
+    } catch {
+      return next(err)
+    }
+  },
+  logout: (req, res) => {
+    req.flash('success_message', '成功登出')
+    req.logout()
+    res.redirect('/signin')
   },
   getHomeTeachers: (req, res) => {
     res.render('index')
