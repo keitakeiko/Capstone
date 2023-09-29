@@ -9,7 +9,7 @@ const userController = {
   getSignUpPage: (req, res, nex) => {
     try {
       return res.render('users/signup')
-    } catch {
+    } catch(err) {
       return next(err)
     }
   },
@@ -67,22 +67,23 @@ const userController = {
       req.flash('success_message', '註冊成功')
 
       return res.redirect('/signin')
-    } catch {
+    } catch(err) {
       return next(err)
     }
   },
   getSignInPage: (req, res, nex) => {
     try {
       return res.render('users/signin')
-    } catch {
+    } catch(err) {
       return next(err)
     }
   },
-  postSignIn: (req, res, nex) => {
+  postSignIn: async (req, res, next) => {
     try {
+      if (req.user.email === 'root@example.com') return res.redirect('/admin')
       req.flash('success_message', '成功登入')
       return res.redirect('/')
-    } catch {
+    } catch(err) {
       return next(err)
     }
   },
@@ -94,7 +95,7 @@ const userController = {
   getHomeTeachers: (req, res) => {
     res.render('index')
   },
-   getUserEditPage: (req, res) => {
+  getUserEditPage: (req, res) => {
     return res.render('users/userEditPage')
   },
   getUserPage: (req, res) => {
@@ -116,7 +117,7 @@ const userController = {
   getReserveClassPage: (req, res) => {
     return res.render('users/reserve-class')
   },
-   getCommentPage: (req, res) => res.render('users/commentPage')
+  getCommentPage: (req, res) => res.render('users/commentPage')
 }
 
 module.exports = {

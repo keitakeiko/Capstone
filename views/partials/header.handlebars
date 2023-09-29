@@ -7,22 +7,37 @@
         Tutor Web
       </a>
 
-      <div class="d-flex align-items-center">
-        <a href="/users/:id/applyTeacher" class="navbar-link me-3">
-          <h5>Name</h5>
-        </a>
 
-        {{#unless 'teacher'}}
-        <a href="/users/:id/applyTeacher" class="navbar-link">
-          <h5>成為老師</h5>
-        </a>
-        {{else}}
-        <a href="/users/:id/applyTeacher" class="navbar-link hidden">
-          <h5>成為老師</h5>
-        </a>
-        {{/unless}}
-      </div>
+      {{#ifCond role 'admin'}}
+        <div class="d-flex align-items-center">
+          <a href="/admin" class="navbar-link me-3">
+            <h5>使用者清單</h5>
+          </a>
+        </div>
+      {{/ifCond}}
+      
+      
+      {{#ifCond role 'teacher'}}
+        <div class="d-flex align-items-center">
+          <a href="/users/:id" class="navbar-link me-3">
+            <h5>Name</h5>
+          </a>
+        </div>
+      {{/ifCond}}
 
+
+      {{#ifCond role 'user'}}
+        <div class="d-flex align-items-center">
+          <a href="/users/:id" class="navbar-link me-3">
+            <h5>Name</h5>
+          </a>
+        </div>
+        <div class="d-flex align-items-center">
+          <a href="/users/:id/applyTeacher" class="navbar-link me-3">
+            <h5>成為老師</h5>
+          </a>
+        </div>
+      {{/ifCond}}
 
       <a href="/" class="navbar-link ms-auto">
         <h5>Log Out</h5>

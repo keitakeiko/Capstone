@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 
-// const adminController = require('../../controllers/admin-controller')
-const { adminGetUsers } = require('../../controllers/admin-controller') 
+const adminController = require('../../controllers/admin-controller')
 
-router.get('/', adminGetUsers)
+
+router.delete('/users/:id', adminController.deleteUsers)
+router.get('/', adminController.adminGetUsers)
+
 
 module.exports = router

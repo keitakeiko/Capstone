@@ -9,6 +9,7 @@ router.get('/:id/checkTeacherPage', userController.getCheckTeacherPage)
 router.get('/:id/applyTeacher', userController.getApplyTeacherPage)
 router.get('/:id/editTeacherPage', userController.getTeacherEditPage)
 router.get('/:id/class', userController.getReserveClassPage)
+// router.delete('/:id/class', userController.deleteReserveClass)
 router.get('/:id/comments', userController.getCommentPage)
 router.get('/:id', userController.getUserPage)
 

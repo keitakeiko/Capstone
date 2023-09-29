@@ -4,16 +4,32 @@
       <th scope="col" class="text-center">編號</th>
       <th scope="col" class="text-center">名字</th>
       <th scope="col" class="text-center">是否成為老師</th>
+      <th scope="col" class="text-center"></th>
     </tr>
   </thead>
 
   <tbody>
+    {{#each users}}
     <tr class="py-2">
-      {{#each users}}
       <td class="text-center">{{ this.id }}</td>
       <td class="text-center">{{ this.name }}</td>
       <td class="text-center">{{ this.role }}</td>
-      {{/each}}
+      <td>
+        {{!-- <button type="button" class="btn btn-link">
+          <a class="btn btn-link link-success" href="/users/{{this.id}}">
+            Show
+          </a>
+        </button>
+        <button type="button" class="btn btn-link">
+          <a class="btn btn-link link-success" href="/users/{{this.id}}/edit">
+            Edit
+          </a>
+        </button> --}}
+        <form action="/admin/users/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-link link-danger"onclick="return confirm(`確定要刪除 {{ this.name }} 嗎？`)">Delete</button>
+        </form>
+      </td>
     </tr>
+    {{/each}}
   </tbody>
 </table>
