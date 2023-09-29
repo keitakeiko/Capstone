@@ -6,6 +6,7 @@
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
 
+    {{#each users}}
     <div class="row row-cols-sm-3 ">
       <div class="col mb-3">
         <div class="card d-flex flex-column">
@@ -14,63 +15,48 @@
             <div class="col-6">
               <div class="square-image">
                 <img
-                  src="https://images.unsplash.com/photo-1508515053963-70c7cc39dfb5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80"
+                  src="{{ this.avatar }}"
                   class="card-img-top" alt="..." width="100%" height="auto">
               </div>
             </div>
             <div class="col-6">
               <div class="info d-flex flex-column align-items-center">
-                <h5 class="text-center"><b>Name</b></h5>
-                <h6 class="text-center">Nation</h6>
+                <h5 class="text-center"><b>{{ this.name }}</b></h5>
+                <h6 class="text-center">{{ this.nation }}</h6>
               </div>
             </div>
           </div>
           
           <div class="card-body">
-            <h6 class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus nisl, accumsan a velit a.</h6>
+            <h6 class="card-text">{{ this.teachingStyle }}</h6>
           </div>
         </div>
       </div>
     </div>
+    {{/each}}
   </div>
 
   <div class="col-sm-2 hidden-xs ">
     <h5>學習時數總排行榜</h5>
     <div class="d-flex flex-column">
+      {{#each ranking}}
       <div class="mb-3">
         <div class="d-flex">
           <div class="col-5">
             <img
-              src="https://images.unsplash.com/photo-1508515053963-70c7cc39dfb5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80"
+              src="{{ this.avatar }}"
               alt="" width="100%" height="100%">
           </div>
           <div class="col-7 d-flex align-items-center">
             <div class="ms-1">
               <h6 class="text-center">
-                No.1 Name
+                No.${{ this.ranking }} {{ this.name }}
               </h6>
             </div>
           </div>
         </div>
       </div>
-  
-      <div class="mb-3">
-        <div class="d-flex">
-          <div class="col-5">
-            <img
-              src="https://images.unsplash.com/photo-1508515053963-70c7cc39dfb5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80"
-              alt="" width="100%" height="100%">
-          </div>
-          <div class="col-7 d-flex align-items-center">
-            <div class="ms-1">
-              <h6 class="text-center">
-                No.2 Name
-              </h6>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {{/each}}
     </div>
   </div>
 

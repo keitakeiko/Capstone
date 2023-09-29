@@ -35,7 +35,7 @@ const userController = {
       if (userEmail) errors.push({ message: 'email 重複註冊'})
       if (userAccount) errors.push({ message: 'account 重複註冊'})
 
-      if (!account || !email || !password || !checkPassword || !nation || !aboutMe) errors.push({ message: '必填項目未完成'})
+      if (!name|| !account || !email || !password || !checkPassword || !nation || !aboutMe) errors.push({ message: '必填項目未完成'})
       if (name.length > 50) errors.push({ message: '暱稱不得超過50字'})
       if (password !== checkPassword) errors.push({ message: '兩次輸入密碼不符'})
 
@@ -66,7 +66,7 @@ const userController = {
 
       req.flash('success_message', '註冊成功')
 
-      return res.redirect('/users/signin')
+      return res.redirect('/signin')
     } catch {
       return next(err)
     }
@@ -81,7 +81,7 @@ const userController = {
   postSignIn: (req, res, nex) => {
     try {
       req.flash('success_message', '成功登入')
-      return res.render('/')
+      return res.redirect('/')
     } catch {
       return next(err)
     }
@@ -93,6 +93,9 @@ const userController = {
   },
   getHomeTeachers: (req, res) => {
     res.render('index')
+  },
+   getUserEditPage: (req, res) => {
+    return res.render('users/userEditPage')
   },
   getUserPage: (req, res) => {
     return res.render('users/userPage')

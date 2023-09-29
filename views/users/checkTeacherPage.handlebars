@@ -2,21 +2,21 @@
   <div class="col-6 d-flex justify-content-start">
     <div class="col-6 d-flex">
       <div class="col-12">
-        <img src="https://loremflickr.com/g/300/300/pomeranian,dog/?lock=100" alt=""  width="100%" height="auto">
+        <img src="{{ teacher.classUrl }}" alt=""  width="100%" height="auto">
       </div>
       <div class="col-12 d-flex flex-column">
         <br>
-        <h3 class="text-center"><b>Name</b></h3>
+        <h3 class="text-center"><b>{{ teacher.name }}</b></h3>
         <br>
         <br>
         <div class="d-flex align-items-center justify-content-center">
           <h1 class="abbr">{{abbr}}</h1>
-          <h6 class="inline-block"><b>Nation</b></h6>
+          <h6 class="inline-block"><b>{{ teacher.nation }}</b></h6>
         </div>
         
         <div class="d-flex align-items-center justify-content-center">
           <i class="fa-solid fa-heart pe-2" style="color: #337a5f;"></i>
-          <h6 class="inline-block"><b>score</b></h6>
+          <h6 class="inline-block"><b>{{ teacher.score }}</b></h6>
         </div>
       </div>
       <div class="col-6">
@@ -25,16 +25,16 @@
             預約上課
           </h6>
           <div class="dropdown">
-            <button class="btn btn-dropdown btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+            <button class="btn btn-dropdown btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" name="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false">
               Time
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             </ul>
           </div>
           <br>
-          <a href="/users/:id/class">
-            <button type="button" class="btn btn- reserve btn-outline-success">Submit</button>
+          <a href="/users/{{ teacher.id }}/class">
+            <button type="submit" class="btn btn- reserve btn-outline-success">Submit</button>
           </a>
         </div>
       </div>
@@ -46,25 +46,26 @@
   <div class="col-12 pe-5 d-flex flex-column justify-content-end">
     <h5 class="my-2"><b>Introduction</b></h5>
     <h6>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus nisl, accumsan a velit a.consectetur
-      adipiscing elit. In purus nisl, accumsan a velit a.
+      {{ teacher.introduction }}
     </h6>
     <br>
     <h5 class="my-2"><b>Teaching Style</b></h5>
     <h6>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus nisl, accumsan a velit a.consectetur
-      adipiscing elit. In purus nisl, accumsan a velit a.
+      {{ teacher.teachingStyle }}
     </h6>
     <br>
     <h5 class="my-2 pt-2"><b>Lesson History</b></h5>
     <div class="col-12 d-flex flex-column">
       <div class="d-flex align-items-center">
         <span class="px-2 py-2" style="background-color:beige">
-          4.8
+          {{ teacher.score}}
         </span>
         <h6 class="inline-block py-3 ps-2"></h6>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        {{ teacher.studentComment }}
         </p>
       </div>
+    </div>
+    <div class="text-center">
+      <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
     </div>
   </div>

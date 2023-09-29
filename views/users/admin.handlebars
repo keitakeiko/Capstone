@@ -9,9 +9,11 @@
 
   <tbody>
     <tr class="py-2">
-      <td class="text-center">1</td>
-      <td class="text-center">Name</td>
-      <td class="text-center">老師</td>
+      {{#each users}}
+      <td class="text-center">{{ this.id }}</td>
+      <td class="text-center">{{ this.name }}</td>
+      <td class="text-center">{{ this.role }}</td>
+      {{/each}}
     </tr>
   </tbody>
 </table>
