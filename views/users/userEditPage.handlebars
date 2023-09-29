@@ -1,37 +1,27 @@
-<form action="/users/{{ user.id }}/edit?_method=PUT" method="POST">
+<form action="/users/{{ user.id }}/edit?_method=PUT" method="POST" enctype="multipart/form-data">
   <div class="col-4 m-3">
-    <h5 class="my-2"><b>{{ user.name }}</b></h5>
-    <input type="text" class="form-control" placeholder="Name">
+    <input type="text" class="form-control" placeholder="Name" value="{{ user.name }}">
   </div>
   
   <div class="col-4 m-3">
-    <h5 class="my-2"><b>{{ user.account }}</b></h5>
-    <input type="text" class="form-control" placeholder="Account">
+    <input type="text" class="form-control" placeholder="Account" value="{{ user.account }}">
   </div>
   
   <div class="col-4 m-3">
-    <h5 class="my-2"><b>{{ user.password }}</b></h5>
     <input type="password" class="form-control" placeholder="Password">
   </div>
   
-  <div class="col-4 m-3">
-    <h5 class="my-2"><b>{{ user.password }}</b></h5>
-    <input type="password" class="form-control" placeholder="Check Password">
+  <div class="col-10 m-3">
+    <input type="text" class="form-control" placeholder="About Me" value="{{ user.aboutMe }}">
   </div>
   
   <div class="col-10 m-3">
-    <h5 class="my-2"><b>{{ user.aboutMe }}</b></h5>
-    <input type="text" class="form-control" placeholder="About Me">
-  </div>
-  
-  <div class="col-10 m-3">
-    <h5 class="my-2"><b>{{ user.avatar }}</b></h5>
-    <input type="url" class="form-control" placeholder="Avatar">
+    <input type="file" class="form-control" class="form-control-file" id="avatar" name="avatar" placeholder="Avatar"
+      value="{{ user.avatar }}">
   </div>
   
   <div class="col-4 m-3">
-    <h5 class="my-2"><b>{{ user.nation }}</b></h5>
-    <input type="text" class="form-control" placeholder="Nation">
+    <input type="text" class="form-control" placeholder="Nation" value="{{ user.nation }}">
   </div>
   
   <div class="ms-3 my-5">

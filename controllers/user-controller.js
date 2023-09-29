@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 
 const { User, Class, Enrollment, sequelize } = require('../models')
 const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
+const { localFileHandler } = require('../helpers/file-helpers')
 const BCRYPT_SALT_LENGTH = 10
 
 const userController = {
@@ -25,7 +26,10 @@ const userController = {
         avatar,
         nation
       } = req.body
-
+      
+      // const { file } = req // multer 照片上傳
+      
+      // 判斷註冊邏輯
       const errors = []
       const [ userEmail, userAccount ] = await Promise.all([
         User.findOne({ where: { email }}),
@@ -54,6 +58,8 @@ const userController = {
       }
       const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
 
+      // await localFileHandler(file) // multer 上傳的路徑
+
       await User.create({
         name,
         account,
@@ -65,7 +71,6 @@ const userController = {
       })
 
       req.flash('success_message', '註冊成功')
-
       return res.redirect('/signin')
     } catch(err) {
       return next(err)
@@ -98,6 +103,9 @@ const userController = {
   getUserEditPage: (req, res) => {
     return res.render('users/userEditPage')
   },
+  // putUserPage: (req, res, next) => {
+
+  // },
   getUserPage: (req, res) => {
     return res.render('users/userPage')
   },

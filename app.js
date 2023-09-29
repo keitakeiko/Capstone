@@ -10,7 +10,9 @@ const methodOverride = require('method-override')
 const passport = require('./config/passport')
 const hbsHelper = require('./helpers/handlebars-helpers')
 const routes = require('./routes') // 預設會找底下 index.js
-const app = express()
+const app = express() 
+const path = require('path') // 引入 path 套件
+
 const PORT = process.env.PORT || 3000
 const SESSION_SECRET = 'whisper crag'
 const { getUser } = require('./helpers/auth-helpers')
@@ -20,13 +22,15 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: hbsHelper }))
 app.set('view engine', 'handlebars')
 
 // 所有路由都會先經過 app.use
-app.use(express.static('public'))
+
 app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 app.use(methodOverride('_method'))
+app.use(express.static('public'))
+app.use('/upload', express.static(path.join(__dirname, 'upload'))) 
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
