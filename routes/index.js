@@ -8,10 +8,10 @@ const passport = require('../config/passport')
 const { generalErrorHandler } = require('../middleware/error-handler')
 const { userController } = require('../controllers/user-controller')
 const { authenticated, authenticatedRole, authenticatedAdmin } = require('../middleware/auth')
-// const upload = require('../middleware/multer')
+const upload = require('../middleware/multer')
 
 router.get('/signup', userController.getSignUpPage)
-router.post('/signup', userController.postSignUp)
+router.post('/signup', upload.single('image'), userController.postSignUp)
 router.get('/signin', userController.getSignInPage)
 router.post('/signin', passport.authenticate('local', {failureRedirect: '/signin', failureFlash: true }), userController.postSignIn)
 

@@ -14,15 +14,15 @@ const app = express()
 const path = require('path') // 引入 path 套件
 
 const PORT = process.env.PORT || 3000
-const SESSION_SECRET = 'whisper crag'
+const SESSION_SECRET = process.env.SESSION_SECRET
 const { getUser } = require('./helpers/auth-helpers')
+
 
 // set view engine
 app.engine('handlebars', exphbs({ defaultLayout: 'main', helpers: hbsHelper }))
 app.set('view engine', 'handlebars')
 
 // 所有路由都會先經過 app.use
-
 app.use(express.urlencoded({ extended: true }))
 app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }))
 app.use(passport.initialize())
@@ -38,6 +38,7 @@ app.use((req, res, next) => {
   next()
 })
 app.use(routes)
+
 
 // 監聽函式
 app.listen(PORT, () => console.log(`http://localhost:${PORT}`))

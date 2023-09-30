@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 
 const { User, Class, Enrollment, sequelize } = require('../models')
 const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { localFileHandler, imgurFileHandler } = require('../helpers/file-helpers')
 const BCRYPT_SALT_LENGTH = 10
 
 const userController = {
@@ -26,8 +26,8 @@ const userController = {
         avatar,
         nation
       } = req.body
-      
-      // const { file } = req // multer 照片上傳
+
+      const { file } = req // multer 照片上傳
       
       // 判斷註冊邏輯
       const errors = []
@@ -58,7 +58,7 @@ const userController = {
       }
       const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
 
-      // await localFileHandler(file) // multer 上傳的路徑
+      await localFileHandler(file) // multer 上傳的路徑
 
       await User.create({
         name,
@@ -66,7 +66,7 @@ const userController = {
         email,
         password: bcrypt.hashSync(password, salt),
         aboutMe,
-        avatar,
+        avatar: file || null,
         nation
       })
 
