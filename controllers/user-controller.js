@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 
 const { User, Class, Enrollment, sequelize } = require('../models')
 const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
-const { localFileHandler, imgurFileHandler } = require('../helpers/file-helpers')
+const { imgurFileHandler } = require('../helpers/file-helpers')
 const BCRYPT_SALT_LENGTH = 10
 
 const userController = {
@@ -58,7 +58,7 @@ const userController = {
       }
       const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
 
-      await localFileHandler(file) // multer 上傳的路徑
+      const filePath = await imgurFileHandler(file) // multer 上傳的路徑
 
       await User.create({
         name,
@@ -66,7 +66,7 @@ const userController = {
         email,
         password: bcrypt.hashSync(password, salt),
         aboutMe,
-        avatar: file || null,
+        avatar: filePath || null,
         nation
       })
 
@@ -97,15 +97,69 @@ const userController = {
     req.logout()
     res.redirect('/signin')
   },
-  getHomeTeachers: (req, res) => {
-    res.render('index')
+  getHomeTeachers: async (req, res, next) => {
+    try {
+      const a = await User.findAll({ where: { role:'teacher'},
+        // 一加就出錯
+        // include: { model: Class, attributes: ['teacherId', 'teachingStyle']},
+        nest:true,
+        raw: true
+        })
+        console.log(a)
+
+      // const [ teacher, style, enrollment ] = await Promise.all([
+      //   User.findAll({ where: { role:'teacher'},
+      //   // 一加就出錯
+      //   // include: { model: Class, attributes: ['teacherId', 'teachingStyle']},
+      //   nest:true,
+      //   raw: true
+      //   }),
+      //   Class.findAll({
+      //     attributes: ['teacherId', 'teachingStyle'],
+      //     nest: true,
+      //     raw:true
+      //   }),
+      //   Enrollment.findAll({
+      //     attributes: ['teacherId', 'studentId', 'spendTime'],
+      //     nest: true,
+      //     raw: true
+      //   })
+      // ])
+      // console.log(enrollment)
+      // const teachers = Array.from({ length: teacher.length }, (_, i) => ({
+      //   avatar: teacher.avatar,
+      //   name: teacher.name,
+      //   nation: teacher.nation,
+      //   teachingStyle: style.teachingStyle
+      // }))
+
+      // const totalTime = {}
+      // enrollment.forEach( record => {
+      //   const { studentId, spendTime } = record
+      //   if (totalTime[studentId]) {
+      //     totalTime += spendTime
+      //   }
+      // })
+      // console.log(totalTime)
+      // for (let i = 0; i < enrollment['studentId'].length; i++) {
+        
+      // }
+
+      return res.render('index',{
+        // teachers,
+        // ranking
+      })
+    } catch(err) {
+      return next(err)
+    }
+    
   },
   getUserEditPage: (req, res) => {
     return res.render('users/userEditPage')
   },
-  // putUserPage: (req, res, next) => {
-
-  // },
+  putUserPage: (req, res, next) => {
+    const { name, account, aboutMe, avatar, nation } = req.body
+  },
   getUserPage: (req, res) => {
     return res.render('users/userPage')
   },
@@ -115,6 +169,7 @@ const userController = {
     return  res.render('users/userPage', {abbr: abbr})
   },
   getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage'),
+
   getUserEditPage: (req, res) => res.render('users/userEditPage'),
 
   getTeacherEditPage: (req, res) => {
@@ -128,6 +183,4 @@ const userController = {
   getCommentPage: (req, res) => res.render('users/commentPage')
 }
 
-module.exports = {
-  userController
-}
+module.exports = userController

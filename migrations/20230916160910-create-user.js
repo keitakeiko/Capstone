@@ -20,7 +20,7 @@ module.exports = {
       avatar: {
         type: Sequelize.STRING
       },
-      about_me: {
+      aboutMe: {
         type: Sequelize.TEXT
       },
       nation: {

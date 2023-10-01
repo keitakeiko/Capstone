@@ -6,7 +6,7 @@
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
 
-    {{#each users}}
+    {{#each teachers}}
     <div class="row row-cols-sm-3 ">
       <div class="col mb-3">
         <div class="card d-flex flex-column">
@@ -50,7 +50,7 @@
           <div class="col-7 d-flex align-items-center">
             <div class="ms-1">
               <h6 class="text-center">
-                No.${{ this.ranking }} {{ this.name }}
+                No.${{@index}}: {{this}} {{ this.name }}
               </h6>
             </div>
           </div>
@@ -59,5 +59,4 @@
       {{/each}}
     </div>
   </div>
-
 </div>

@@ -7,7 +7,7 @@ const passport = require('../config/passport')
 const auth = require('./modules/auth')
 
 const { generalErrorHandler } = require('../middleware/error-handler')
-const { userController } = require('../controllers/user-controller')
+const userController = require('../controllers/user-controller')
 const { authenticated, authenticatedRole, authenticatedAdmin } = require('../middleware/auth')
 const upload = require('../middleware/multer')
 
