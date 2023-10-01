@@ -17,8 +17,8 @@ module.exports = {
       avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=100`,
       nation: NATION,
       role: 'admin',
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     ...Array.from({ length: STUDENT_AMOUNT }, (_, i) => ({
       name: `user${ i + 1 }`,
@@ -29,8 +29,8 @@ module.exports = {
       avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 1 }`,
       nation: NATION,
       role: 'user', // student
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     })),
     // 每個使用者有至少 2 頁（10 篇）老師可以選擇
     ...Array.from({ length: TEACHER_AMOUNT }, (_, i) => ({
@@ -42,8 +42,8 @@ module.exports = {
       avatar: `https://loremflickr.com/g/300/300/pomeranian,dog/?lock=${ i + 100 }`,
       nation: NATION,
       role: 'teacher',
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
     }))
   ])
   },

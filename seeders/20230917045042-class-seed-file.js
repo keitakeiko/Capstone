@@ -45,8 +45,8 @@ module.exports = {
           classDetail: faker.lorem.sentence(INTRODUCTION_LENGTH),
           availableTime,
           classUrl: faker.internet.url(),
-          created_at: new Date(),
-          updated_at: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
         });
         usedTimeSlots.add(availableTime);
       } else {

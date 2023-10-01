@@ -21,8 +21,8 @@ module.exports = {
       // score:'', // integer can't use string
       spendTime: classes[Math.floor(i / TEACHER_AMOUNT)].spendTime.toString(),
       studentComment: '',
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
       }))
       ,
       // 每個老師有至少 2 個 New Lesson
@@ -31,8 +31,8 @@ module.exports = {
       classId: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].id,
       spendTime: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].spendTime.toString(),
       studentComment: '',
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
       }))
       ,
       // 每個老師有至少 2 個過往上課評價
@@ -42,8 +42,8 @@ module.exports = {
       score: Math.floor(Math.random() * (SCORELIMIT * 10 + 1)) / 10,
       spendTime: classes[Math.floor(i / TEACHER_PER_COMMENT)].spendTime.toString(),
       studentComment: faker.lorem.sentence(INTRODUCTION_LENGTH),
-      created_at: new Date(),
-      updated_at: new Date()
+      createdAt: new Date(),
+      updatedAt: new Date()
       }))
     ])
     },

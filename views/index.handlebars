@@ -6,17 +6,15 @@
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
 
-    {{#each teachers}}
-    <div class="row row-cols-sm-3 ">
-      <div class="col mb-3">
+    
+    <div class="row mb-3 d-flex justify-content-around">
+      {{#each teachers}}
+      <div class="col-md-3 m-2">
         <div class="card d-flex flex-column">
-
           <div class="d-flex align-items-center justify-content-between">
             <div class="col-6">
               <div class="square-image">
-                <img
-                  src="{{ this.avatar }}"
-                  class="card-img-top" alt="..." width="100%" height="auto">
+                <img src="{{ this.avatar }}" class="card-img-top" alt="..." width="100%" height="auto">
               </div>
             </div>
             <div class="col-6">
@@ -26,31 +24,30 @@
               </div>
             </div>
           </div>
-          
+         
           <div class="card-body">
             <h6 class="card-text">{{ this.teachingStyle }}</h6>
           </div>
         </div>
       </div>
+      {{/each}}
     </div>
-    {{/each}}
+    
   </div>
 
-  <div class="col-sm-2 hidden-xs ">
+  <div class="col-sm-2 hidden-xs">
     <h5>學習時數總排行榜</h5>
     <div class="d-flex flex-column">
       {{#each ranking}}
       <div class="mb-3">
         <div class="d-flex">
           <div class="col-5">
-            <img
-              src="{{ this.avatar }}"
-              alt="" width="100%" height="100%">
+            <img src="{{ this.avatar }}" alt="" width="100%" height="100%">
           </div>
           <div class="col-7 d-flex align-items-center">
             <div class="ms-1">
               <h6 class="text-center">
-                No.${{@index}}: {{this}} {{ this.name }}
+                No.{{ this.rank }} {{ this.name }}
               </h6>
             </div>
           </div>

@@ -99,60 +99,55 @@ const userController = {
   },
   getHomeTeachers: async (req, res, next) => {
     try {
-      const a = await User.findAll({ where: { role:'teacher'},
-        // 一加就出錯
-        // include: { model: Class, attributes: ['teacherId', 'teachingStyle']},
-        nest:true,
-        raw: true
-        })
-        console.log(a)
-
-      // const [ teacher, style, enrollment ] = await Promise.all([
-      //   User.findAll({ where: { role:'teacher'},
-      //   // 一加就出錯
-      //   // include: { model: Class, attributes: ['teacherId', 'teachingStyle']},
-      //   nest:true,
-      //   raw: true
-      //   }),
-      //   Class.findAll({
-      //     attributes: ['teacherId', 'teachingStyle'],
-      //     nest: true,
-      //     raw:true
-      //   }),
-      //   Enrollment.findAll({
-      //     attributes: ['teacherId', 'studentId', 'spendTime'],
-      //     nest: true,
-      //     raw: true
-      //   })
-      // ])
-      // console.log(enrollment)
-      // const teachers = Array.from({ length: teacher.length }, (_, i) => ({
-      //   avatar: teacher.avatar,
-      //   name: teacher.name,
-      //   nation: teacher.nation,
-      //   teachingStyle: style.teachingStyle
-      // }))
-
-      // const totalTime = {}
-      // enrollment.forEach( record => {
-      //   const { studentId, spendTime } = record
-      //   if (totalTime[studentId]) {
-      //     totalTime += spendTime
-      //   }
-      // })
-      // console.log(totalTime)
-      // for (let i = 0; i < enrollment['studentId'].length; i++) {
-        
-      // }
-
+        const [teacher, totalTimeByStudent] =
+        await Promise.all([
+          User.findAll({
+            where: { role: 'teacher' },
+            include: {
+              model: Class,
+              attributes: ['teacherId', 'teachingStyle']
+            },
+            nest: true,
+            raw: true
+          }),
+          Enrollment.findAll({
+            raw: true,
+            nest: true,
+            attributes: [
+              'studentId','createdAt',
+              [sequelize.fn('sum', sequelize.col('spendTime')), 'totalTime']
+            ],
+            include: { model: User, attributes: ['name', 'avatar'] },
+            group: 'studentId',
+            limit: 10
+          })
+        ])
+    
+      const teachers = Array.from({ length: teacher.length }, (_, i) => ({
+        name: teacher[i].name,
+        avatar: teacher[i].avatar,
+        nation: teacher[i].nation,
+        teachingStyle: teacher[i].Class.teachingStyle
+      }))
+      
+      const spendMostTimeStudent =  totalTimeByStudent.sort(function (a,b) {
+        return Number(b.totalTime) - Number(a.totalTime)
+      })
+      
+      const ranking = Array.from({ length: spendMostTimeStudent.length }, (_, i) => ({
+        name: spendMostTimeStudent[i].User.name,
+        avatar: spendMostTimeStudent[i].User.avatar,
+        totalTime: spendMostTimeStudent[i].totalTime,
+        rank: i + 1
+      }))
+      
       return res.render('index',{
-        // teachers,
-        // ranking
+        teachers,
+        ranking
       })
     } catch(err) {
       return next(err)
     }
-    
   },
   getUserEditPage: (req, res) => {
     return res.render('users/userEditPage')
