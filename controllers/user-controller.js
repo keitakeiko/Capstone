@@ -149,11 +149,49 @@ const userController = {
       return next(err)
     }
   },
-  getUserEditPage: (req, res) => {
-    return res.render('users/userEditPage')
+  getUserEditPage: async (req, res, next) => {
+    try {
+      const userId = req.params.userId
+      const user = await User.findByPk(userId, {
+        raw: true,
+        nest: true
+      })
+      if (!user) throw new Error("使用者不存在")
+      res.render('users/userEditPage', { user })
+    } catch(err) {
+      return next(err)
+    }
   },
-  putUserPage: (req, res, next) => {
-    const { name, account, aboutMe, avatar, nation } = req.body
+  putUserPage: async (req, res, next) => {
+    try {
+      const { name, account, aboutMe, avatar, nation } = req.body
+      const { file } = req
+      const userId = req.params.id // params 拿下來的都會是字串
+
+      if (Number(userId) !== req.user.id) {
+        req.flash('error_messages', '不能更改他人檔案')
+        res.redirect('/')
+      }
+
+      const [ user, filePath ] = await Promise.all([
+        User.findByPk(userId),
+        imgurFileHandler(file) 
+      ])
+
+      if (!user) throw new Error("使用者不存在")
+      await user.update({
+        name,
+        account,
+        aboutMe,
+        avatar: filePath || user.image,
+        nation
+      })
+      
+      req.flash('success_message', '使用者資料編輯成功')
+      res.redirect(`/users/${userId}`)
+    } catch(err) {
+      return next(err)
+    }
   },
   getUserPage: (req, res) => {
     return res.render('users/userPage')
