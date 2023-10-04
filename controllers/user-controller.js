@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs')
+const dayjs = require('dayjs')
 
+const { Op } = require('sequelize')
 const { User, Class, Enrollment, sequelize } = require('../models')
 const { getAbbreviationCountry} = require('../helpers/handlebars-helpers')
 const { imgurFileHandler } = require('../helpers/file-helpers')
@@ -9,7 +11,7 @@ const userController = {
 
   getSignUpPage: (req, res, nex) => {
     try {
-      return res.render('users/signup')
+      return res.render('signup')
     } catch(err) {
       return next(err)
     }
@@ -44,7 +46,7 @@ const userController = {
       if (password !== checkPassword) errors.push({ message: '兩次輸入密碼不符'})
 
       if (errors.length) {
-        return res.render('users/signup', {
+        return res.render('signup', {
           errors,
           name,
           account,
@@ -78,7 +80,7 @@ const userController = {
   },
   getSignInPage: (req, res, nex) => {
     try {
-      return res.render('users/signin')
+      return res.render('signin')
     } catch(err) {
       return next(err)
     }
@@ -99,36 +101,31 @@ const userController = {
   },
   getHomeTeachers: async (req, res, next) => {
     try {
-        const [teacher, totalTimeByStudent] =
-        await Promise.all([
-          User.findAll({
-            where: { role: 'teacher' },
-            include: {
-              model: Class,
-              attributes: ['teacherId', 'teachingStyle']
-            },
-            nest: true,
-            raw: true
-          }),
-          Enrollment.findAll({
-            raw: true,
-            nest: true,
-            attributes: [
-              'studentId','createdAt',
-              [sequelize.fn('sum', sequelize.col('spendTime')), 'totalTime']
-            ],
-            include: { model: User, attributes: ['name', 'avatar'] },
-            group: 'studentId',
-            limit: 10
-          })
-        ])
-    
-      const teachers = Array.from({ length: teacher.length }, (_, i) => ({
-        name: teacher[i].name,
-        avatar: teacher[i].avatar,
-        nation: teacher[i].nation,
-        teachingStyle: teacher[i].Class.teachingStyle
-      }))
+      const isSignIn = req.isAuthenticated()
+      const [totalTeacher, totalTimeByStudent] =
+      await Promise.all([
+        User.findAll({
+          where: { role: 'teacher' },
+          include: {
+            model: Class,
+            attributes: ['teacherId', 'teachingStyle']
+          },
+          attributes: ['id', 'name', 'avatar', 'nation', 'role'],
+          nest: true,
+          raw: true
+        }),
+        Enrollment.findAll({
+          raw: true,
+          nest: true,
+          attributes: [
+            'studentId','createdAt',
+            [sequelize.fn('sum', sequelize.col('spendTime')), 'totalTime']
+          ],
+          include: { model: User, attributes: ['name', 'avatar'] },
+          group: 'studentId',
+          limit: 10
+        })
+      ])
       
       const spendMostTimeStudent =  totalTimeByStudent.sort(function (a,b) {
         return Number(b.totalTime) - Number(a.totalTime)
@@ -142,8 +139,9 @@ const userController = {
       }))
       
       return res.render('index',{
-        teachers,
-        ranking
+        totalTeacher,
+        ranking,
+        isSignIn
       })
     } catch(err) {
       return next(err)
@@ -151,20 +149,21 @@ const userController = {
   },
   getUserEditPage: async (req, res, next) => {
     try {
-      const userId = req.params.userId
+      const role = req.user.role
+      const userId = req.params.id
       const user = await User.findByPk(userId, {
         raw: true,
-        nest: true
+        nest: true,
       })
       if (!user) throw new Error("使用者不存在")
-      res.render('users/userEditPage', { user })
+      res.render('users/userEditPage', { user, role })
     } catch(err) {
       return next(err)
     }
   },
   putUserPage: async (req, res, next) => {
     try {
-      const { name, account, aboutMe, avatar, nation } = req.body
+      const { name, account, aboutMe, nation } = req.body
       const { file } = req
       const userId = req.params.id // params 拿下來的都會是字串
 
@@ -193,19 +192,172 @@ const userController = {
       return next(err)
     }
   },
-  getUserPage: (req, res) => {
-    return res.render('users/userPage')
+  getUserPage: async (req, res, next) => {
+    try {
+      const role = req.user.role
+      const userId = req.user.id
+      const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1525498128493-380d1990a112?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80'
+      
+      const userInfo = await Enrollment.findAll({
+        raw: true,
+        nest: true,
+        attributes: ['id', 'studentId', 'classId','classTime','spendTime', 'score','studentComment'],
+        include: [{
+          model: Class,
+          attributes: ['id', 'teacherId', 'classUrl',
+          [sequelize.fn('sum', sequelize.col('Enrollment.spendTime')), 'totalTime']
+        ],
+          include: { model: User, attributes: ['id', 'name', 'avatar'] } // teacher's info
+          },
+          { //studentInfo
+          model: User, 
+          attributes: ['id', 'name', 'nation', 'aboutMe', 'avatar']
+        }],
+        where: {
+          studentId: userId,
+          classTime: {
+            // 小於今天的歷史訊息
+            [Op.lt]: dayjs().toDate()
+          },
+          // 沒評價或是沒給分的會顯示出來
+            [Op.or]: {
+              studentComment: { [Op.eq]: null },
+              score: { [Op.eq]: null }
+          }
+        },
+        order: [['classTime', 'DESC']]
+      })
+      
+      const allStudentRanking = await Enrollment.findAll({
+        attributes: [
+          'studentId',
+          [sequelize.fn('sum', sequelize.col('spendTime')), 'totalTime']
+        ],
+        group: 'studentId',
+        order: [sequelize.literal('totalTime DESC')]
+      })
+
+      const currentStudentRank = allStudentRanking.findIndex( student => student.studentId === userInfo[0].User.id) + 1
+      
+      return res.render('users/userPage', {
+        name: userInfo[0].User.name,
+        avatar: userInfo[0].User.avatar,
+        nation: userInfo[0].User.nation,
+        aboutMe: userInfo[0].User.aboutMe,
+        class: {
+          teacherName: userInfo[0].Class.User.name,
+          avatar: userInfo[0].Class.User.avatar || DEFAULT_AVATAR,
+          time: userInfo[0].classTime,
+          url: userInfo[0].Class.classUrl
+        },
+        ranking: currentStudentRank,
+        role
+      })
+      
+    } catch(err) {
+      return next(err)
+    }
   },
-  getTeacherPage: (req, res) => {
-    const NATION = 'Thailand'
-    const abbr = getAbbreviationCountry(NATION)
-    return  res.render('users/userPage', {abbr: abbr})
+  getTeacherPage: async (req, res, next) => {
+    try {
+      const role = req.user.role
+      const userId = req.params.id
+      const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1525498128493-380d1990a112?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80'
+      
+      const teacherInfo = await User.findByPk( userId, {
+        raw: true,
+        nest: true,
+        attributes: ['id', 'name', 'nation', 'aboutMe'],
+        include:[{ 
+          model: Class,
+          attributes: ['id', 'teacherId', 'teachingStyle']
+        }]
+      })
+      
+      const pastCourses  = await Enrollment.findAll({
+        raw: true,
+        nest: true,
+        attributes: ['id', 'classId', 'score', 'studentComment', 'studentId','classTime',
+          [
+            sequelize.literal(`(
+              SELECT AVG(r.score)
+              FROM Enrollments r
+              JOIN Classes c
+              ON r.classId = c.id
+              WHERE c.teacherId = ${sequelize.escape(userId)}
+              AND r.score IS NOT NULL)`),
+              'avgRating'
+          ]],
+        include: [{
+           //studentInfo
+          model: User, attributes: ['id', 'name']
+        }],
+        where: {
+          classTime: {
+            // 小於今天的歷史訊息
+            [Op.lt]: dayjs().toDate()
+          },
+          // 已評價且給分的會顯示出來
+          studentComment: { [Op.not]: null },
+          score: { [Op.not]: null }
+        },
+        order: [['classTime', 'DESC']],
+        limit:2
+      })
+
+      const futureBookings = await Enrollment.findAll({
+        raw: true,
+        nest: true,
+        attributes: ['id', 'classId', 'classTime', 'studentId'],
+        include: [
+          { 
+            model: Class, 
+            attributes: ['id', 'classUrl'], 
+            where: { teacherId: userId}
+          },
+          { model: User,  attributes: ['id', 'name']}
+        ],
+        where: {
+          classTime: {
+            // 未來兩周
+            [Op.between]: [dayjs().toDate(), dayjs().add(2, 'week').toDate()]
+          }
+        },
+        order: [['classTime', 'ASC']]
+      });
+      
+      
+      const futureBookingInfo = futureBookings.map(booking => ({
+        classTime: booking.classTime,
+        classUrl: booking.Class.classUrl,
+        studentName: booking.User.name 
+      }));
+      
+      return res.render('teachers/teacherPage', {
+        name: teacherInfo.name,
+        avatar: teacherInfo.avatar || DEFAULT_AVATAR,
+        abbr: getAbbreviationCountry(teacherInfo.nation),
+        nation: teacherInfo.nation,
+        aboutMe: teacherInfo.aboutMe,
+        teachingStyle: teacherInfo.Class.teachingStyle,
+        score: pastCourses[0].avgRating,
+        futureBookingInfo,
+        pastCourses,
+        role
+      })
+      
+    } catch(err) {
+      return next(err)
+    }
   },
   getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage'),
 
   getUserEditPage: (req, res) => res.render('users/userEditPage'),
 
   getTeacherEditPage: (req, res) => {
+    return res.render('users/checkTeacherPage')
+  },
+  putTeacherEditPage: (req, res, next) => {
     return res.render('users/checkTeacherPage')
   },
   getApplyTeacherPage: (req, res) => 

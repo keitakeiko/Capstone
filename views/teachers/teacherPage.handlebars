@@ -1,0 +1,81 @@
+<div class="row mx-3 my-3 d-flex">
+  <div class="col-3 d-flex flex-column">
+    <div>
+      <img src="{{ avatar }}" alt="" width="80%" height="auto">
+    </div>
+    
+    <br>
+    <br>
+
+    <h3><b>{{ name }}</b></h3>
+      <br>
+
+      <div class="d-flex align-items-center">
+        <i class="abbr-icon fa-solid fa-heart pe-2" style="color: #337a5f;"></i>
+        <i class="abbr">{{ abbr }}</i>
+        <h6 class="inline-block ms-2"><b>{{ nation }}</b></h6>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <i class="fa-solid fa-heart pe-2" style="color: #337a5f;"></i>
+        <h6 class="inline-block"><b>{{ score }}</b></h6>
+      </div>
+
+      <h6><b>🙋 About Me</b></h6>
+      <h6>
+        {{ aboutMe }}
+      </h6>
+      <br>
+
+  </div>
+
+  <div class="col-9 px-5 d-flex flex-column">
+    <h5 class="my-3"><b>New Schedule</b></h5>
+    <div class="row d-flex my-2 justify-content-center">
+      {{#if futureBookingInfo.length}}
+        {{#each futureBookingInfo}}
+        <div class="col-sm-6 col-xs-12">
+          <div class="card" style="width: 100%;">
+            <div class="card-body">
+              <p class="card-text">Time: {{this.classTime}}</p>
+              <p class="card-text">Teacher's Name: {{this.studentName}}</p>
+              <p class="card-text">Session Link: {{this.url}}</p>
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      {{else}}
+        <p>No upcoming schedules.</p>
+      {{/if}}
+
+      <h5 class="my-3 pt-2"><b>Your Teaching Style</b></h5>
+      <div class="col-12">
+        <p>
+          {{ teachingStyle }}
+        </p>
+      </div>
+
+      <h5 class="my-3 pt-2"><b>Lesson History</b></h5>
+      <div class="col-12 d-flex flex-column">
+        {{#each pastCourses}}
+        <div class="d-flex align-items-center">
+          <p><span class="px-2 py-2" style="background-color:beige">
+          {{ this.score }}
+          </span></p>
+          <h6 class="inline-block py-3 ps-2">{{ this.studentComment}}</h6>
+        </div>
+        {{/each}}
+      </div>
+
+      <a href="/users/:id/editTeacherPage" class="d-flex flex-wrap justify-content-end align-items-end py-2">
+        <button type="submit" class="btn btn-outline-success mx-auto">Edit Profile &amp; Booking Calendar</button>
+      </a>
+
+
+
+      <div class="text-center">
+        <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+      </div>
+    </div>
+  </div>
+</div>

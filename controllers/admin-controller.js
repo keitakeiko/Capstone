@@ -15,7 +15,6 @@ const adminController = {
   },
   deleteUsers: async (req, res, next) => {
     try {
-      console.log(727)
       const userId = req.params.id
       const test = await User.destroy({
         where: {

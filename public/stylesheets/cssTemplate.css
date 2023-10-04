@@ -1,5 +1,5 @@
 
-.navbar-link {
+.navbar-link, .cardInfo{
   text-decoration: none;
   /* 移除底线 */
   color: inherit;
@@ -28,7 +28,8 @@
 }
 
 .abbr {
-  font-size: 0.5em;
-  margin-right: 5px;
+  font-size: 0.8em;
+  margin-right: 3px;
 }
+
 

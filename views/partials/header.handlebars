@@ -26,22 +26,30 @@
       {{/ifCond}}
 
 
-      {{#ifCond role 'user'}}
-        <div class="d-flex align-items-center">
-          <a href="/users/:id" class="navbar-link me-3">
-            <h5>Name</h5>
-          </a>
-        </div>
-        <div class="d-flex align-items-center">
-          <a href="/users/:id/applyTeacher" class="navbar-link me-3">
-            <h5>成為老師</h5>
-          </a>
-        </div>
-      {{/ifCond}}
+      
+      <div class="d-flex align-items-center">
+        <a href="/users/:id" class="navbar-link me-3">
+          <h5>Name</h5>
+        </a>
+      </div>
+      <div class="d-flex align-items-center">
+        <a href="/users/:id/applyTeacher" class="navbar-link me-3">
+          <h5>成為老師</h5>
+        </a>
+      </div>
+    
 
-      <a href="/" class="navbar-link ms-auto">
-        <h5>Log Out</h5>
+     
+
+      <a href="/signin" class="navbar-link ms-auto">
+        {{#if isSignIn}}
+          <h5>Log out</h5>
+        {{else}}
+        <h5>Sign in</h5>
+        {{/if}}
       </a>
+      
+      
 
     </div>
   </nav>

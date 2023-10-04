@@ -18,17 +18,15 @@ const authenticatedAdmin = (req, res, next) => {
   }
 }
 
-const authenticatedRole = (req, res, next) => {
+const authenticatedTeacher = (req, res, next) => {
   // if (req.isAuthenticated)
   if (ensureAuthenticated(req)) {
-    if (getUser(req).role === 'teacher' || getUser(req).role === 'user') return next()
-  } else {
-    return res.redirect('/signin')
+    if (getUser(req).role === 'teacher' ) return next()
   }
 }
 
 module.exports = {
   authenticated,
   authenticatedAdmin,
-  authenticatedRole
+  authenticatedTeacher
 }

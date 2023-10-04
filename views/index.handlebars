@@ -1,5 +1,5 @@
-<div class="row ms-2 my-2 justify-content-between">
-  <div class="col-sm-10">
+<div class="row d-flex">
+  <div class="ms-1 col-sm-9">
 
     <form class="d-flex mb-3">
       <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -8,34 +8,35 @@
 
     
     <div class="row mb-3 d-flex justify-content-around">
-      {{#each teachers}}
-      <div class="col-md-3 m-2">
-        <div class="card d-flex flex-column">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="col-6">
-              <div class="square-image">
-                <img src="{{ this.avatar }}" class="card-img-top" alt="..." width="100%" height="auto">
+      {{#each totalTeacher}}
+      <div class="col-md-3 m-1">
+        <a href="/teachers/{{this.id}}" class="cardInfo">
+          <div class="card d-flex flex-column">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="col-6">
+                <div class="square-image">
+                  <img src="{{ this.avatar }}" class="card-img-top" alt="..." width="100%" height="auto">
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="info d-flex flex-column align-items-center">
+                  <h5 class="text-center"><b>{{ this.name }}</b></h5>
+                  <h6 class="text-center">{{ this.nation }}</h6>
+                </div>
               </div>
             </div>
-            <div class="col-6">
-              <div class="info d-flex flex-column align-items-center">
-                <h5 class="text-center"><b>{{ this.name }}</b></h5>
-                <h6 class="text-center">{{ this.nation }}</h6>
-              </div>
+        
+            <div class="card-body">
+              <h6 class="card-text">{{ this.Class.teachingStyle }}</h6>
             </div>
           </div>
-         
-          <div class="card-body">
-            <h6 class="card-text">{{ this.teachingStyle }}</h6>
-          </div>
-        </div>
+        </a>
       </div>
       {{/each}}
     </div>
-    
   </div>
 
-  <div class="col-sm-2 hidden-xs">
+  <div class="me-1 col-sm-2">
     <h5>學習時數總排行榜</h5>
     <div class="d-flex flex-column">
       {{#each ranking}}
@@ -55,5 +56,6 @@
       </div>
       {{/each}}
     </div>
+
   </div>
 </div>
