@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     availableTime: DataTypes.DATE,
     classDetail: DataTypes.TEXT,
     classUrl: DataTypes.STRING,
+    introduction: DataTypes.STRING,
   },{
     sequelize,
     modelName: 'Class',

@@ -126,7 +126,7 @@ const userController = {
           limit: 10
         })
       ])
-      
+
       const spendMostTimeStudent =  totalTimeByStudent.sort(function (a,b) {
         return Number(b.totalTime) - Number(a.totalTime)
       })
@@ -154,8 +154,10 @@ const userController = {
       const user = await User.findByPk(userId, {
         raw: true,
         nest: true,
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt']}
       })
       if (!user) throw new Error("使用者不存在")
+
       res.render('users/userEditPage', { user, role })
     } catch(err) {
       return next(err)
@@ -228,6 +230,8 @@ const userController = {
         order: [['classTime', 'DESC']]
       })
       
+      if (!userInfo) throw new Error("使用者不存在")
+
       const allStudentRanking = await Enrollment.findAll({
         attributes: [
           'studentId',
@@ -267,13 +271,16 @@ const userController = {
       const teacherInfo = await User.findByPk( userId, {
         raw: true,
         nest: true,
-        attributes: ['id', 'name', 'nation', 'aboutMe'],
+        attributes: ['id', 'name', 'nation', 'aboutMe',
+          { exclude: ['password', 'createdAt', 'updatedAt']}],
         include:[{ 
           model: Class,
           attributes: ['id', 'teacherId', 'teachingStyle']
         }]
       })
       
+      if  (!teacherInfo) throw new Error("查無資料")
+
       const pastCourses  = await Enrollment.findAll({
         raw: true,
         nest: true,
@@ -350,18 +357,95 @@ const userController = {
       return next(err)
     }
   },
-  getCheckTeacherPage: (req, res) => res.render('users/checkTeacherPage'),
-
-  getUserEditPage: (req, res) => res.render('users/userEditPage'),
-
-  getTeacherEditPage: (req, res) => {
-    return res.render('users/checkTeacherPage')
+  getCheckTeacherPage: async (req, res, next) => {
+    try {
+      const role = req.user.role
+      const userId = req.params.id
+      const teacherInfo = await User.findByPk( userId, {
+        raw: true,
+        nest: true,
+        attribute: ['id', 'name', 'nation',
+          { exclude: ['password', 'createdAt', 'updatedAt']}],
+        include: [{
+          model: Class,
+          attributes: ['id', 'teacherId', 'teachingStyle', 'introduction']
+        }, {
+          model: Enrollment,
+          attributes: ['id', 'studnetComment',
+            [
+              sequelize.literal(`(
+                SELECT AVG(r.score)
+                FROM Enrollments r
+                JOIN Classes c
+                ON r.classId = c.id
+                WHERE c.teacherId = ${sequelize.escape(userId)}
+                AND r.score IS NOT NULL)`),
+                'avgRating'
+            ]
+          ]
+        }]
+      })
+      if (!teacherInfo) throw new Error("使用者不存在")
+      res.render('users/studentCheckTeacherPage', {
+        id: teacherInfo.id,
+        name: teacherInfo.name,
+        abbr: getAbbreviationCountry(teacherInfo.nation),
+        nation: teacherInfo.nation,
+        classUrl: teacherInfo.classUrl,
+        introduction: teacherInfo.Class.introduction,
+        teachingStyle: teacherInfo.Class.teachingStyle,
+        score: teacherInfo.Enrollment.avgRating,
+        studentComment: teacherInfo.Enrollment.studentComment,
+        role
+      })
+    } catch(err) {
+      next(err)
+    }
   },
+  getTeacherEditPage: async (req, res) => {
+    try {
+      const role =  req.user.role
+      const userId = req.user.id
+      
+      const teacherInfo = await User.findByPk(userId, {
+        raw: true,
+        nest: true,
+        attributes: ['id', 'name', 'nation',
+        { exclude: ['password', 'createdAt', 'updatedAt']}],
+        include: [{
+          mode: Class,
+          attributes: ['id', 'introduction', 'teachingStyle', 'classUrl', 'availableTime']
+        }, {
+          model: Enrollment,
+          attributes: ['id', 'classTime']
+        }]
+      })
+      
+      if (!teacherInfo) throw new Error("無此資料")
+      if (role === 'teacher') throw new Error("已經是老師")
+      
+      return res.render('teachers/teacherEditPage', {
+        id: teacherInfo.id,
+        name: teacherInfo.name,
+        nation: teacherInfo.nation,
+        role
+      })
+    } catch(err) {
+      next(err)
+    }
+  },
+  getApplyTeacherPage: (req, res) => {
+    try {
+      
+      res.render('users/applyTeacher')
+    } catch(err) {
+      next(err)
+    }
+  },
+  
   putTeacherEditPage: (req, res, next) => {
     return res.render('users/checkTeacherPage')
   },
-  getApplyTeacherPage: (req, res) => 
-    res.render('users/applyTeacher'),
   getReserveClassPage: (req, res) => {
     return res.render('users/reserve-class')
   },
