@@ -10,6 +10,7 @@ module.exports = {
     const lowercaseNation = NATION.toLowerCase()
     const Nation = lowercaseNation[0].toUpperCase() + lowercaseNation.substring(1)
     return countryCodesMap[Nation]
-  }
+  },
+  
 }
 

@@ -16,13 +16,13 @@ const upload = require('../middleware/multer')
 router.get('/signup', userController.getSignUpPage)
 router.post('/signup', upload.single('image'), userController.postSignUp)
 router.get('/signin', userController.getSignInPage)
-router.post('/signin', passport.authenticate('local', {failureRedirect: '/signin', failureFlash: true }), userController.postSignIn)
+router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.postSignIn)
 
 router.use('/teachers', authenticated, teachers)
 router.use('/users', authenticated, users)
 router.use('/admin', authenticatedAdmin, admin)
-router.use('/auth', auth) // fb authentication
+router.use('/auth', auth)
 router.get('/', userController.getHomeTeachers)
-router.use('/', generalErrorHandler)
+router.use('/', authenticated, generalErrorHandler)
 
 module.exports = router

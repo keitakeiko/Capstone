@@ -22,11 +22,11 @@ passport.use(new LocalStrategy(
         if (err) return cb(err, null)
       })
 
-      const user = await User.findOne({ where: { email }})
+      const user = await User.findOne({ where: { email } })
       if (!user) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤'))
 
       const passwordCorrect = await bcrypt.compare(password, user.password)
-      if(!passwordCorrect) return cb(null, false, req.flash('error_messages', '帳號或密碼錯誤'))
+      if (!passwordCorrect) return cb(null, false, req.flash('error_messages', '帳號或密碼錯誤'))
 
       return cb(null, user)
 
@@ -37,7 +37,7 @@ passport.use(new LocalStrategy(
 ))
 
 passport.use(new FacebookStrategy({
-  clientID:process.env.FACEBOOK_ID,
+  clientID: process.env.FACEBOOK_ID,
   clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: process.env.FACEBOOK_CALLBACK,
   profileFields: ['email', 'displayName']
@@ -52,10 +52,10 @@ passport.use(new FacebookStrategy({
     const user = await User.create({
       name,
       email,
-      password:bcrypt.hashSync(randomPassword, salt)
+      password: bcrypt.hashSync(randomPassword, salt)
     })
     if (user) done(null, user)
-  } catch(err) {
+  } catch (err) {
     return done(err, false)
   }
 }))
@@ -64,7 +64,7 @@ passport.use(new FacebookStrategy({
 passport.serializeUser(async (user, cb) => {
   try {
     return cb(null, user.id)
-  } catch(err) {
+  } catch (err) {
     return cb(err, false)
   }
 })
@@ -73,14 +73,14 @@ passport.deserializeUser(async (id, cb) => {
     const user = await User.findByPk(id, {
       raw: true,
       nest: true,
-      attributes: { exclude: ['password', 'createdAt', 'updatedAt']}
-      })
-      // delete user.password
+      attributes: ['id', 'name', 'email', 'account', 'nation', 'avatar', 'aboutMe', 'role']
+    })
+    // delete user.password
 
-      return cb( null, user)
-    } catch(err) {
-      return cb(err, false)
-    }
+    return cb(null, user)
+  } catch (err) {
+    return cb(err, false)
+  }
 })
 
 module.exports = passport

@@ -5,7 +5,7 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
   class Class extends Model {
-    static associate (models) {
+    static associate(models) {
       Class.belongsTo(models.User, { foreignKey: 'teacherId' })
       Class.hasMany(models.Enrollment, { foreignKey: 'classId' })
     }
@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     classDetail: DataTypes.TEXT,
     classUrl: DataTypes.STRING,
     introduction: DataTypes.STRING,
-  },{
+    availableDay: DataTypes.STRING
+  }, {
     sequelize,
     modelName: 'Class',
     tableName: 'Classes',
