@@ -10,7 +10,7 @@ const methodOverride = require('method-override')
 const passport = require('./config/passport')
 const hbsHelper = require('./helpers/handlebars-helpers')
 const routes = require('./routes') // 預設會找底下 index.js
-const app = express() 
+const app = express()
 const path = require('path') // 引入 path 套件
 
 const PORT = process.env.PORT || 3000
@@ -30,7 +30,7 @@ app.use(passport.session())
 app.use(flash())
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
-app.use('/upload', express.static(path.join(__dirname, 'upload'))) 
+app.use('/upload', express.static(path.join(__dirname, 'upload')))
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')

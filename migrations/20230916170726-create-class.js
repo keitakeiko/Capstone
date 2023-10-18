@@ -11,9 +11,6 @@ module.exports = {
       teacherId: {
         type: Sequelize.INTEGER
       },
-      className: {
-        type: Sequelize.STRING
-      },
       spendTime: {
         type: Sequelize.INTEGER
       },
@@ -22,9 +19,6 @@ module.exports = {
       },
       availableTime: {
         type: Sequelize.DATE
-      },
-      classDetail: {
-        type: Sequelize.TEXT
       },
       classUrl: {
         type: Sequelize.STRING

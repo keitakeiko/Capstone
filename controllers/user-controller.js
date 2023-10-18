@@ -104,7 +104,9 @@ const userController = {
   getHomeTeachers: async (req, res, next) => {
     try {
       const isSignIn = req.isAuthenticated()
-      const role = req.user.role
+      // let role
+      const role = req.user?.role
+      console.log(role)
       const [totalTeacher, totalTimeByStudent] =
         await Promise.all([
           User.findAll({
@@ -454,16 +456,21 @@ const userController = {
         attributes: ['id', 'name', 'email', 'account', 'nation', 'avatar', 'aboutMe', 'role'],
         include: {
           model: Class,
-          attributes: ['id', 'introduction']
+          attributes: ['id', 'introduction', 'teachingStyle', 'spendTime', 'classUrl', 'availableDay']
         }
       })
-
+      console.log(teacherInfo)
       if (!teacherInfo) throw new Error("無此資料")
 
       return res.render('teachers/teacherEditPage', {
         id: teacherInfo.id,
         name: teacherInfo.name,
         nation: teacherInfo.nation,
+        introduction: teacherInfo.Class.introduction,
+        teachingStyle: teacherInfo.Class.teachingStyle,
+        classUrl: teacherInfo.Class.classUrl,
+        spendTime: teacherInfo.Class.spendTime,
+        availableDay: teacherInfo.Class.availableDay,
         role,
         isSignIn
       })
@@ -472,54 +479,42 @@ const userController = {
     }
   },
   putTeacherEditPage: async (req, res, next) => {
-    const {name, nation, introduction, te} = req.body
-    return res.render('users/checkTeacherPage')
-  },
-  postTeacherEditPage: async (req, res, next) => {
     try {
-      const role = req.user.role
+      const id = Number(req.params.id)
       const userId = req.user.id
-      const { id, name, nation, introduction, teachingStyle, spendTime, classUrl, Mon, Tue, Wed, Thur, Fri, Sat, Sun } = req.body
+      const { name, nation, introduction, teachingStyle, spendTime, classUrl, Mon, Tue, Wed, Thur, Fri, Sat, Sun } = req.body
+      console.log(id)
+      console.log(userId)
 
-      const teacherInfo = await User.findByPk(userId, {
-        raw: true,
-        nest: true,
-        attributes: ['id', 'name', 'email', 'account', 'nation', 'avatar', 'aboutMe', 'role'],
-        include: {
-          model: Class,
-          attributes: ['id', 'introduction', 'teachingStyle', 'classUrl', 'spendTime']
-        }
+      if (id !== userId) throw new Error("不可修改他人資料")
+
+      let availableDay = ''
+      if (Mon) availableDay += 'Mon,'
+      if (Tue) availableDay += 'Tue,'
+      if (Wed) availableDay += 'Wed,'
+      if (Thur) availableDay += 'Thur,'
+      if (Fri) availableDay += 'Fri,'
+      if (Sat) availableDay += 'Sat,'
+      if (Sun) availableDay += 'Sun,'
+
+      const user = await User.findByPk(id)
+      const classInfo = await Class.findOne({
+        where: { teacherId: id }
+      })
+      console.log(classInfo)
+      await user.update({
+        name,
+        nation
       })
 
+      await classInfo.update({
+        introduction,
+        teachingStyle,
+        spendTime,
+        classUrl,
+        availableDay
+      })
 
-      if (!teacherInfo) throw new Error("無此資料")
-      if (role === 'teacher') throw new Error("已經是老師")
-      if (!name || !nation || !introduction || !teachingStyle || !spendTime || !classUrl) throw new Error("欄位皆為必填")
-
-      const week = {}
-      if (Mon) week.Mon = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Tue) week.Tue = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Wed) week.Wed = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Thur) week.Thur = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Fri) week.Fri = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Sat) week.Sat = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-      if (Sun) week.Sun = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
-
-      await Promise.all([
-        Class.create({
-          availableDay: week,
-          introduction,
-          teachingStyle,
-          spendTime,
-          classUrl
-        }),
-        User.create({
-          name,
-          nation
-        })
-      ])
-
-      req.flash('success_message', '申請成功')
       return res.redirect('/')
     } catch (err) {
       next(err)
@@ -555,21 +550,25 @@ const userController = {
     try {
       const userId = req.user.id
       const { introduction, teachingStyle, spendTime, classUrl, Mon, Tue, Wed, Thur, Fri, Sat, Sun } = req.body
+      console.log(req.body)
+      const role = 'teacher'
+
+      if (!introduction || !teachingStyle || !spendTime || !classUrl) throw new Error("全部欄位皆為必填")
 
       const user = await User.findByPk(userId, {
-        raw: true,
         nest: true,
         attributes: ['id']
       })
 
       let availableDay = ''
-      if (Mon) availableDay += 'Mon'
-      if (Tue) availableDay += 'Tue'
-      if (Wed) availableDay += 'Wed'
-      if (Thur) availableDay += 'Thur'
-      if (Fri) availableDay += 'Fri'
-      if (Sat) availableDay += 'Sat'
-      if (Sun) availableDay += 'Sun'
+      if (Mon === '') { availableDay += 'Mon,' }
+      if (Tue === '') { availableDay += 'Tue,' }
+      if (Wed === '') { availableDay += 'Wed,' }
+      if (Thur === '') { availableDay += 'Thur,' }
+      if (Fri === '') { availableDay += 'Fri,' }
+      if (Sat === '') { availableDay += 'Sat,' }
+      if (Sun === '') { availableDay += 'Sun,' }
+
       // if (Mon) week.Mon = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
       // if (Tue) week.Tue = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
       // if (Wed) week.Wed = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
@@ -578,13 +577,18 @@ const userController = {
       // if (Sat) week.Sat = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
       // if (Sun) week.Sun = ['18:00', '18:30', '19:00', '19:30', '20:00', '20:30']
 
-      await Class.create({
+
+      const classInfo = await Class.create({
         teacherId: user.id,
-        introduction: introduction || user.Class.introduction,
+        introduction,
         teachingStyle,
         availableDay,
         spendTime,
         classUrl
+      })
+
+      await user.update({
+        role: 'teacher'
       })
 
       return res.redirect('/')
@@ -592,11 +596,14 @@ const userController = {
       next(err)
     }
   },
-
   getReserveClassPage: async (req, res, next) => {
+      
     return res.render('users/reserve-class')
   },
-  getCommentPage: async (req, res, next) => res.render('users/commentPage')
+  getCommentPage: async (req, res, next) => {
+
+    return res.render('users/commentPage')
+  }
 }
 
 module.exports = userController

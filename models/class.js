@@ -12,11 +12,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Class.init({
     teacherId: DataTypes.INTEGER,
-    className: DataTypes.STRING,
-    spendTime: DataTypes.STRING,
+    spendTime: DataTypes.INTEGER,
     teachingStyle: DataTypes.TEXT,
     availableTime: DataTypes.DATE,
-    classDetail: DataTypes.TEXT,
     classUrl: DataTypes.STRING,
     introduction: DataTypes.STRING,
     availableDay: DataTypes.STRING

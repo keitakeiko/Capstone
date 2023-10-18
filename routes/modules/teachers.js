@@ -5,7 +5,7 @@ const userController = require('../../controllers/user-controller')
 
 router.get('/:id/checkTeacherPage', userController.getCheckTeacherPage)
 router.get('/:id/editTeacherPage', userController.getTeacherEditPage)
-router.post('/:id/editTeacherPage', userController.postTeacherEditPage)
+router.put('/:id/editTeacherPage', userController.putTeacherEditPage)
 router.get('/:id', userController.getTeacherPage)
 
 

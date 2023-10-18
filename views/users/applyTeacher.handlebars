@@ -21,18 +21,20 @@
 
         <h5 class="my-2"><b>Teaching Style</b></h5>
         <div class="mb-4">
-          <input type="text" id="teachingStyle" name="teachingStyle" class="form-control" placeholder="Teaching Style">
+          <input type="text" id="teachingStyle" name="teachingStyle" class="form-control" placeholder="Teaching Style"
+            value="{{ teachingStyle }}">
         </div>
 
         {{!-- 30 / 60 minutes class duration --}}
         <h5 class="my-2"><b>Class Time</b></h5>
         <div class="mb-4">
-          <input type="text" id="spendTime" name="spendTime" class="form-control" placeholder="30 mins or 60 mins">
+          <input type="text" id="spendTime" name="spendTime" class="form-control" placeholder="30 mins or 60 mins"
+            value="{{ spendTime }}">
         </div>
 
         <h5 class="my-2"><b>上課網址</b></h5>
         <div class="mb-4">
-          <input type="url" id="classUrl" name="classUrl" class="form-control" placeholder="url">
+          <input type="url" id="classUrl" name="classUrl" class="form-control" placeholder="url" value="{{ classUrl }}">
         </div>
 
         <h5 class="my-2"><b>開放預約</b></h5>
