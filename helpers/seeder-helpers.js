@@ -14,12 +14,14 @@ module.exports = {
   TEACHER_ID_START: 100,
 
   getAvailableDay: () => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']
     let result = ''
-    days.forEach(day => {
-      if (Math.random() > 0.5) result += `${day},`
-    })
-    return result.slice(0, -1) // 確保末端不會有多餘逗號
+    for (let i = 0; i < 7; i++) {
+      // 0: Sunday, 1: Monday ...
+      if (Math.random() > 0.5) result += `${i},`
+    }
+    if (result === '') result = '0'
+
+    return result.slice(0, -1)
   },
 
   getAvailableTime: (getDay, lastMonth = 0) => {

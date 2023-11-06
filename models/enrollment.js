@@ -5,8 +5,8 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
   class Enrollment extends Model {
-    
-    static associate (models) {
+
+    static associate(models) {
       Enrollment.belongsTo(models.User, { foreignKey: 'studentId' })
       Enrollment.belongsTo(models.Class, { foreignKey: 'classId' })
     }
@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Enrollment',
     tableName: 'Enrollments',
-    // underscored: true,
   });
   return Enrollment;
 };

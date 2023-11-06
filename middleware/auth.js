@@ -1,4 +1,4 @@
-const { ensureAuthenticated, getUser } = require('../helpers/auth-helpers')
+const { getUser } = require('../helpers/auth-helpers')
 
 const authenticated = (req, res, next) => {
   // if (req.isAuthenticated)
@@ -18,15 +18,22 @@ const authenticatedAdmin = (req, res, next) => {
   }
 }
 
-const authenticatedTeacher = (req, res, next) => {
-  // if (req.isAuthenticated)
-  if (ensureAuthenticated(req)) {
-    if (getUser(req).role === 'teacher' ) return next()
-  }
+// passport 來的
+const ensureAuthenticated = req => {
+  return req.isAuthenticated()
 }
+
+const authenticatedStudent = (req, res, next) => {
+  const user = getUser(req)
+  if (user?.role === 'student') return next()
+  req.flash('error_messages', '學生身分才能執行操作')
+  res.redirect('/')
+}
+
 
 module.exports = {
   authenticated,
   authenticatedAdmin,
-  authenticatedTeacher
+  ensureAuthenticated,
+  authenticatedStudent
 }

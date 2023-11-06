@@ -1,6 +1,6 @@
 'use strict';
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async  (queryInterface, Sequelize) => {
     return queryInterface.createTable('Classes', {
       id: {
         allowNull: false,
@@ -18,7 +18,10 @@ module.exports = {
         type: Sequelize.TEXT
       },
       availableTime: {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
+      },
+      availableDay: {
+        type: Sequelize.STRING
       },
       classUrl: {
         type: Sequelize.STRING
@@ -37,7 +40,7 @@ module.exports = {
       }
     });
   },
-  down: (queryInterface, Sequelize) => {
+  down: async (queryInterface, Sequelize) => {
     return queryInterface.dropTable('Classes');
   }
 };

@@ -17,7 +17,7 @@ module.exports = {
         spendTime: getMinuteDuration(),
         introduction: faker.lorem.sentence(INTRODUCTION_LENGTH),
         teachingStyle: faker.lorem.sentence(INTRODUCTION_LENGTH),
-        availableTime: getAvailableTime(i),
+        availableTime: getAvailableTime(i).toString(), // 30 或 60 分鐘
         availableDay: getAvailableDay(),
         classUrl: faker.internet.url(),
         createdAt: new Date(),

@@ -14,15 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     teacherId: DataTypes.INTEGER,
     spendTime: DataTypes.INTEGER,
     teachingStyle: DataTypes.TEXT,
-    availableTime: DataTypes.DATE,
     classUrl: DataTypes.STRING,
     introduction: DataTypes.STRING,
     availableDay: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Class',
-    tableName: 'Classes',
-    // underscored: true,
+    tableName: 'Classes'
   })
   return Class
 };

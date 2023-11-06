@@ -21,7 +21,6 @@ module.exports = {
         // score:'', // integer can't use string
         spendTime: classes[Math.floor(i / TEACHER_AMOUNT)].spendTime,
         classTime: getAvailableTime(i, 1),
-        studentComment: '',
         createdAt: new Date(),
         updatedAt: new Date()
       }))
@@ -32,7 +31,6 @@ module.exports = {
         classId: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].id,
         spendTime: classes[Math.floor(i / TEACHER_PER_NEWLESSON)].spendTime,
         classTime: getAvailableTime(i),
-        studentComment: '',
         createdAt: new Date(),
         updatedAt: new Date()
       }))

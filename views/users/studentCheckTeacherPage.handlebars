@@ -2,16 +2,16 @@
   <div class="col-6 d-flex justify-content-start">
     <div class="col-6 d-flex">
       <div class="col-12">
-        <img src="{{ avatar }}" alt="" width="100%" height="auto">
+        <img src="{{ teacherInfo.avatar }}" alt="" width="100%" height="auto">
       </div>
       <div class="col-12 d-flex flex-column">
         <br>
-        <h3 class="text-center"><b>{{ name }}</b></h3>
+        <h3 class="text-center"><b>{{ teacherInfo.name }}</b></h3>
         <br>
         <br>
         <div class="d-flex align-items-center justify-content-center">
-          <h1 class="abbr">{{abbr}}</h1>
-          <h6 class="inline-block"><b>{{ nation }}</b></h6>
+          <h1 class="abbr">{{ abbr }}</h1>
+          <h6 class="inline-block"><b>{{ teacherInfo.nation }}</b></h6>
         </div>
 
         <div class="d-flex align-items-center justify-content-center">
@@ -19,55 +19,93 @@
           <h6 class="inline-block"><b>{{ score }}</b></h6>
         </div>
       </div>
-      <div class="col-6">
+
+      {{#ifCond role 'user'}}
+      <div class="col-6" id="reserveForm">
         <div class="col-10 d-flex flex-column">
-          <h6 class="mb-3 p-2" style="background-color:beige">
-            預約上課
-          </h6>
-          <div class="dropdown">
-            <button class="btn btn-dropdown btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-              name="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-              Time
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            </ul>
-          </div>
-          <br>
-          <a href="/users/{{ userId }}/class">
-            <button type="submit" class="btn btn- reserve btn-outline-success">Submit</button>
-          </a>
+          <form action="/teachers/{{../teacherInfo.id}}/checkTeacherPage" method="POST">
+            <input type="hidden" name="classId" value="{{../classId}}">
+            <h6 class="mb-3 p-2" style="background-color:beige">
+              預約上課
+            </h6>
+
+            <select name="classTime" id="classTime" class="form-select form-select-sm mt-3"
+              aria-label=".form-select-sm example">
+              <option selected>Time</option>
+              {{#each ../adjustedAvailablePeriod}}
+              <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary btn-sm mt-3">Submit</button>
+            </div>
+          </form>
         </div>
+        <br>
       </div>
-
-
+      {{/ifCond}}
     </div>
   </div>
+</div>
+
+{{#if modalInfo.result}}
+<div class="modal fade" id="reserve_modal" tabindex="-1" aria-labelledby="reserveModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{modalInfo.result}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      {{#if modalInfo.name}}
+      <div class="modal-body">
+        <p>Time: {{modalInfo.classTime}}</p>
+        <p>Teacher's Name: {{modalInfo.name}}</p>
+        <p>Teacher's Meeting Link: {{modalInfo.classUrl}}</p>
+      </div>
+      {{/if}}
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const myModal = new bootstrap.Modal(document.getElementById('reserve_modal'))
+    myModal.show()
+  })
+</script>
+{{/if}}
+<br>
+
+
+<div class="col-12 pe-5 d-flex flex-column justify-content-end">
+  <h5 class="my-2"><b>Introduction</b></h5>
+  <h6>
+    {{ teacherInfo.Class.introduction }}
+  </h6>
   <br>
-  <div class="col-12 pe-5 d-flex flex-column justify-content-end">
-    <h5 class="my-2"><b>Introduction</b></h5>
-    <h6>
-      {{ introduction }}
-    </h6>
-    <br>
-    <h5 class="my-2"><b>Teaching Style</b></h5>
-    <h6>
-      {{ teachingStyle }}
-    </h6>
-    <br>
-    <h5 class="my-2 pt-2"><b>Lesson History</b></h5>
-    {{#each lessonHistory}}
-    <div class="col-12 d-flex flex-column">
-      <div class="d-flex align-items-center">
-        <span class="px-2 py-2" style="background-color:beige">
-          {{ this.score}}
-        </span>
-        <h6 class="inline-block py-3 ps-2"></h6>
-        {{ this.studentComment }}
-        </p>
-      </div>
-    </div>
-    {{/each}}
-    <div class="text-center">
-      <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+  <h5 class="my-2"><b>Teaching Style</b></h5>
+  <h6>
+    {{ teacherInfo.Class.teachingStyle }}
+  </h6>
+  <br>
+  <h5 class="my-2 pt-2"><b>Lesson History</b></h5>
+  {{#each lessonHistory}}
+  <div class="col-12 d-flex flex-column">
+    <div class="d-flex align-items-center">
+      <span class="px-2 py-2" style="background-color:beige">
+        {{ this.score}}
+      </span>
+      <h6 class="inline-block py-3 ps-2"></h6>
+      {{ this.studentComment }}
+      </p>
     </div>
   </div>
+  {{/each}}
+  <div class="text-center">
+    <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+  </div>
+</div>
+</div>
