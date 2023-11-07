@@ -139,6 +139,7 @@ const userController = {
 		try {
 			const isSignIn = req.isAuthenticated()
 			const role = req.user?.role
+			const userId = req.user?.id || null
 
 			const { keyword } = req.query
 			const where = keyword
@@ -163,18 +164,19 @@ const userController = {
 						attributes: ['id', 'name', 'avatar', 'studyHours', 'createdAt'],
 						order: [['studyHours', 'DESC']],
 						limit: 10,
-						where: { role: 'student' }
+						where: { role: 'user' }
 					})
 				])
 
 			// 賦值新屬性
 			totalTimeByStudent.forEach((student, index) => (student.ranking = index + 1))
-
+			console.log(totalTimeByStudent)
 			return res.render('index', {
 				totalTeacher,
 				totalTimeByStudent,
 				isSignIn, // 藉此判斷 header 登入或登出
-				role
+				role,
+				userId
 			})
 		} catch (err) {
 			return next(err)
@@ -235,6 +237,7 @@ const userController = {
 			const isSignIn = req.isAuthenticated()
 			const role = req.user.role
 			const userId = req.user.id
+
 			const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1525498128493-380d1990a112?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80'
 
 			const userInfo = await User.findByPk(userId, {
@@ -722,7 +725,7 @@ const userController = {
 
 			if (!classes) throw new Error('查無此課程')
 
-			await Enrollment.create({
+			const one = await Enrollment.create({
 				studentId,
 				classId,
 				classTime: classTimeInfo,
@@ -740,16 +743,36 @@ const userController = {
 		}
 	},
 	getCommentPage: async (req, res, next) => {
-		const isSignIn = req.isAuthenticated()
-		const userId = req.user.id
-		const role = req.user.role
-		const id = req.params.id
+		try {
+			const isSignIn = req.isAuthenticated()
+			const role = req.user.role
+			const enrollmentId = req.query.enrollmentId
+			console.log(enrollmentId)
+			const record = await Enrollment.findByPk(enrollmentId, {
+				raw: true,
+				nest: true,
+				attributes: ['id', 'classTime', 'spendTime'],
+				include: {
+					model: Class,
+					attributes: ['id'],
+					include: { model: User, attributes: ['id', 'name'] }
+				}
+			})
 
+			if (!record) throw new Error('查無此上課紀錄')
 
-		return res.render('users/commentPage', {
-			isSignIn,
-			role
-		})
+			record.ClassTime = getClassTime(record.classTime, record.spendTime)
+			delete record.classTime
+			delete record.spendTime
+
+			return res.render('users/commentPage', {
+				record,
+				isSignIn,
+				role
+			})
+		} catch (err) {
+			next(err)
+		}
 	}
 }
 

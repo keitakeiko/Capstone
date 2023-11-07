@@ -7,6 +7,28 @@
         Tutor Web
       </a>
 
+      {{#if isSignIn}}
+
+      {{#ifCond role 'user'}}
+      <div class="d-flex align-items-center">
+        <a href="/users/{{../user.id}}" class="navbar-link me-3">
+          <h5>Name</h5>
+        </a>
+      </div>
+      <div class="d-flex align-items-center">
+        <a href="/users/{{../user.id}}/applyTeacher" class="navbar-link me-3">
+          <h5>成為老師</h5>
+        </a>
+      </div>
+      {{/ifCond}}
+
+      {{#ifCond role 'teacher'}}
+      <div class="d-flex align-items-center">
+        <a href="/teachers/{{../user.id}}" class="navbar-link me-3">
+          <h5>Name</h5>
+        </a>
+      </div>
+      {{/ifCond}}
 
       {{#ifCond role 'admin'}}
       <div class="d-flex align-items-center">
@@ -16,40 +38,24 @@
       </div>
       {{/ifCond}}
 
+      <div class="align-items-center">
+        <li class="nav-item" style="justify-content:end">
+          <a class="btn btn-primary btn-sm mx-2" href="/logout">Log Out</a>
+        </li>
+      </div>
 
-      {{#ifCond role 'teacher'}}
-      <div class="d-flex align-items-center">
-        <a href="/teachers/{{user.id}}" class="navbar-link me-3">
-          <h5>Name</h5>
+      {{else}}
+
+      <div>
+        <a href="/signup" class="navbar-link ms-auto">
+          Sign up
+        </a>
+        <a href="/signin" class="navbar-link ms-3">
+          Sign in
         </a>
       </div>
-      {{/ifCond}}
 
-
-      {{#ifCond role 'user'}}
-      <div class="d-flex align-items-center">
-        <a href="/users/{{user.id}}" class="navbar-link me-3">
-          <h5>Name</h5>
-        </a>
-      </div>
-      <div class="d-flex align-items-center">
-        <a href="/users/{{user.id}}/applyTeacher" class="navbar-link me-3">
-          <h5>成為老師</h5>
-        </a>
-      </div>
-      {{/ifCond}}
-
-
-
-      <a href="/signin" class="navbar-link ms-auto">
-        {{#if isSignIn}}
-        <h5>Log out</h5>
-        {{else}}
-        <h5>Sign in</h5>
-        {{/if}}
-      </a>
-
-
+      {{/if}}
 
     </div>
   </nav>

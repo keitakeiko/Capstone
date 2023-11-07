@@ -74,7 +74,7 @@ module.exports = {
     return result_arr
   },
 
-  // 計算特定選課時間
+  // 計算出特定選課時間
   getClassTime: (classTime, spendTime) => {
     const formattedClassTime = dayjs(classTime).format('YYYY-MM-DD HH:mm')
     const endTime = dayjs(classTime).add(spendTime, 'minute').format('HH:mm')
