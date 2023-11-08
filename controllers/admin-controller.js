@@ -1,14 +1,15 @@
 const { User } = require('../models')
 
 const adminController = {
-  
+
   adminGetUsers: async (req, res, next) => {
     try {
+      const isSignIn = req.isAuthenticated()
       const users = await User.findAll({
-      raw: true,
-      nest: true
+        raw: true,
+        nest: true
       })
-      return res.render('users/admin', { users , role: 'admin'})
+      return res.render('users/admin', { users, isSignIn, role: 'admin' })
     } catch {
       return next(err)
     }
@@ -23,7 +24,7 @@ const adminController = {
         raw: true,
         nest: true
       })
-      req.flash('success_message','成功刪除')
+      req.flash('success_message', '成功刪除')
       return res.redirect('back')
     } catch {
       return next(err)

@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return  await queryInterface.createTable('Enrollments', {
+    return await queryInterface.createTable('Enrollments', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       score: {
-        type: Sequelize.INTEGER
+        type: Sequelize.FLOAT
       },
       spendTime: {
         type: Sequelize.INTEGER

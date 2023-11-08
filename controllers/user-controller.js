@@ -16,7 +16,7 @@ const {
 	extraClassTime
 } = require('../helpers/time-helpers')
 
-const BCRYPT_SALT_LENGTH = process.env
+const { BCRYPT_SALT_LENGTH } = process.env
 
 const userController = {
 
@@ -71,7 +71,7 @@ const userController = {
 					nation
 				})
 			}
-			const salt = bcrypt.genSaltSync(BCRYPT_SALT_LENGTH)
+			const salt = bcrypt.genSaltSync(Number(BCRYPT_SALT_LENGTH))
 
 			const filePath = await imgurFileHandler(file) // multer 上傳的路徑
 
@@ -100,10 +100,13 @@ const userController = {
 	},
 	postSignIn: async (req, res, next) => {
 		try {
-			const role = req.user.role
+			let role = req.user.role
 
-			if (req.user.email === 'root@example.com') return res.redirect('/admin')
-			req.flash('success_message', '成功登入')
+			if (req.user.email === 'root@example.com') {
+				req.flash('success_message', '成功登入')
+				role = 'admin'
+				return res.redirect('/admin')
+			}
 
 			// 每次使用者登入時先撈學習時數，並存放起來，比每次使用到時，都要從資料庫撈資料的效能好
 			if (role == 'student') {
@@ -170,7 +173,7 @@ const userController = {
 
 			// 賦值新屬性
 			totalTimeByStudent.forEach((student, index) => (student.ranking = index + 1))
-			console.log(totalTimeByStudent)
+
 			return res.render('index', {
 				totalTeacher,
 				totalTimeByStudent,
@@ -759,17 +762,40 @@ const userController = {
 				}
 			})
 
-			if (!record) throw new Error('查無此上課紀錄')
+			if (!record) throw new Error('查無此上課紀錄111')
+			console.log(record)
 
-			record.ClassTime = getClassTime(record.classTime, record.spendTime)
+			record.time = getClassTime(record.classTime, record.spendTime)
 			delete record.classTime
 			delete record.spendTime
 
 			return res.render('users/commentPage', {
 				record,
+				enrollmentId,
 				isSignIn,
 				role
 			})
+		} catch (err) {
+			next(err)
+		}
+	},
+	comment: async (req, res, next) => {
+		try {
+			const userId = req.user.id
+			const enrollmentId = Number(req.query.enrollmentId)
+			const { rating, studentComment } = req.body
+			let isSuccess = false
+			const adjustedRating = Number(rating)
+			console.log(adjustedRating)
+			const record = await Enrollment.findByPk(enrollmentId)
+			if (!record) throw new Error('查無此上課紀錄')
+
+			await record.update({ score: adjustedRating, studentComment })
+			isSuccess = true
+
+			const query = isSuccess ? 'result=評分成功' : 'result=評分失敗'
+
+			return res.redirect(`/users/${userId}/`)
 		} catch (err) {
 			next(err)
 		}
