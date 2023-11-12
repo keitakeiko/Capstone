@@ -6,7 +6,6 @@ const ensureAuthenticated = req => {
 }
 
 const authenticated = (req, res, next) => {
-  // if (req.isAuthenticated)
   if (ensureAuthenticated(req)) {
     return next()
   }
@@ -14,7 +13,6 @@ const authenticated = (req, res, next) => {
 }
 
 const authenticatedAdmin = (req, res, next) => {
-  // if (req.isAuthenticated)
   if (ensureAuthenticated(req)) {
     if (getUser(req).role === 'admin') return next()
     req.flash('error_messages', '管理員身分才能執行操作')

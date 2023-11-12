@@ -79,6 +79,7 @@ module.exports = {
     const formattedClassTime = dayjs(classTime).format('YYYY-MM-DD HH:mm')
     const endTime = dayjs(classTime).add(spendTime, 'minute').format('HH:mm')
     return `${formattedClassTime} to ${endTime} `
+    // 2023-10-31 18:00 to 18:30
   },
 
   // 計算末段時間是否可選 60 分鐘的課

@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs')
 const dayjs = require('dayjs')
 
 const { Op, fn, col } = require('sequelize')
-const { User, Class, Enrollment, sequelize } = require('../models')
-const { getAbbreviationCountry } = require('../helpers/handlebars-helpers')
-const { imgurFileHandler } = require('../helpers/file-helpers')
+const { User, Class, Enrollment, sequelize } = require('../../models')
+const { getAbbreviationCountry } = require('../../helpers/handlebars-helpers')
+const { imgurFileHandler } = require('../../helpers/file-helpers')
 const {
 	today,
 	tomorrow,
@@ -14,9 +14,9 @@ const {
 	getAvailablePeriod,
 	getClassTime,
 	extraClassTime
-} = require('../helpers/time-helpers')
+} = require('../../helpers/time-helpers')
 
-const { BCRYPT_SALT_LENGTH } = process.env
+const { BCRYPT_SALT_LENGTH } = process.env // 取出 string
 
 const userController = {
 
@@ -151,7 +151,7 @@ const userController = {
 
 			const [totalTeacher, totalTimeByStudent] =
 				await Promise.all([
-					User.findAll({
+					User.findAll({ // findAll 出來的是陣列
 						nest: true,
 						raw: true,
 						attributes: ['id', 'name', 'avatar', 'nation', 'role', 'aboutMe'],
@@ -510,6 +510,7 @@ const userController = {
 		try {
 			const userId = req.user.id
 			const isSignIn = req.isAuthenticated()
+			const role = req.user.role
 
 			const user = await User.findByPk(userId, {
 				raw: true,
@@ -526,7 +527,8 @@ const userController = {
 				name: user.name,
 				nation: user.nation,
 				introduction: user.Class.introduction,
-				isSignIn
+				isSignIn,
+				role
 			})
 		} catch (err) {
 			next(err)
@@ -728,7 +730,7 @@ const userController = {
 
 			if (!classes) throw new Error('查無此課程')
 
-			const one = await Enrollment.create({
+			await Enrollment.create({
 				studentId,
 				classId,
 				classTime: classTimeInfo,

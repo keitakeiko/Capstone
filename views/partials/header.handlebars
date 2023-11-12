@@ -8,12 +8,13 @@
           Tutor Web
         </a>
 
+
         {{#if isSignIn}}
 
         {{#ifCond role 'user'}}
         <div class="d-flex flex-row">
           <a href="/users/{{../user.id}}" class="navbar-link">
-            <h5>Name</h5>
+            <h5>{{../user.name}}</h5>
           </a>
 
           <a href="/users/{{../user.id}}/applyTeacher" class="navbar-link me-3">
@@ -28,7 +29,7 @@
       {{#ifCond role 'teacher'}}
 
       <a href="/teachers/{{../user.id}}" class="navbar-link me-3">
-        <h5>Name</h5>
+        <h5>{{../user.name}}</h5>
       </a>
     </div>
 
@@ -44,8 +45,8 @@
     {{/ifCond}}
 
     <div class="align-items-center" style="justify-content:end">
-      <a href="/logout" class="mx-2 navbar-link" style="text-decoration: none; color: inherit;">Log
-        Out</a>
+      <a href="/logout" class="mx-2 navbar-link" style="text-decoration: none; color: inherit;">Log Out
+      </a>
     </div>
 
 
@@ -64,6 +65,6 @@
 
     {{/if}}
 
-    {{!-- </div> --}}
+
   </nav>
 </header>
