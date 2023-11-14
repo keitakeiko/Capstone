@@ -140,34 +140,13 @@ module.exports = {
   },
   getTopStudents: async (req, res, next) => {
     try {
-      const topStudents2 = await User.findAll({
+      const topStudents = await User.findAll({
         raw: true,
         nest: true,
         attributes: ['id', 'name', 'avatar', 'studyHours'],
         order: [['studyHours', 'DESC']],
-        // group: 'id',
-        // include: {
-        //   model: Enrollment, attributes: ['id', 'studentId', 'spendTime', 'classTime']
-        // },
         where: {
-          // classTime: {
-          //   [Op.lt]: today.toDate()
-          // }
           role: 'user'
-        }
-      })
-
-      const topStudents = await Enrollment.findAll({
-        raw: true,
-        nest: true,
-        attributes: ['studentId', [fn('sum', col('spendTime')), 'totalTime']],
-        include: { model: User, attributes: ['id', 'name', 'avatar'] },
-        order: [['totalTime', 'DESC']],
-        group: 'studentId',
-        where: {
-          classTime: {
-            [Op.lt]: today.toDate()
-          }
         }
       })
 
