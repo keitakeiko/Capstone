@@ -131,7 +131,7 @@ const userController = {
 			return next(err)
 		}
 	},
-	logout: (req, res, next) => {
+	logout: async (req, res, next) => {
 		req.logout(err => {
 			if (err) req.flash('error_message', err)
 		})
@@ -752,7 +752,7 @@ const userController = {
 			const isSignIn = req.isAuthenticated()
 			const role = req.user.role
 			const enrollmentId = req.query.enrollmentId
-			console.log(enrollmentId)
+
 			const record = await Enrollment.findByPk(enrollmentId, {
 				raw: true,
 				nest: true,
@@ -765,7 +765,7 @@ const userController = {
 			})
 
 			if (!record) throw new Error('查無此上課紀錄111')
-			console.log(record)
+
 
 			record.time = getClassTime(record.classTime, record.spendTime)
 			delete record.classTime
@@ -788,7 +788,7 @@ const userController = {
 			const { rating, studentComment } = req.body
 			let isSuccess = false
 			const adjustedRating = Number(rating)
-			console.log(adjustedRating)
+
 			const record = await Enrollment.findByPk(enrollmentId)
 			if (!record) throw new Error('查無此上課紀錄')
 
