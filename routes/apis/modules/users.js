@@ -12,12 +12,12 @@ const upload = require('../../../middleware/multer')
 
 
 router.post('/signup', upload.single('avatar'), userController.signUp)
-// router.post('/signin', passport.authenticate('local', { session: true }, userController.postSignIn))
+router.post('/signin', passport.authenticate('local', { session: true }), userController.signIn)
 
-// router.get('/logout', userController.logout)
-
+router.get('/logout', userController.logout)
+router.get('/ranking', userController.getTopStudents)
 // router.get('/search', authenticated, userController.getHomeTeachers)
-// router.get('/', userController.getHomeTeachers)
+router.get('/', userController.userPage)
 router.use('/', generalErrorHandler)
 
 module.exports = router

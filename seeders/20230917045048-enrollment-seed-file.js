@@ -1,6 +1,8 @@
 'use strict';
 const faker = require('faker');
 const { SCORELIMIT, TEACHER_PER_COMMENT, TEACHER_PER_NEWLESSON, LESSON_PER_STUDENT, STUDENT_AMOUNT, TEACHER_AMOUNT, INTRODUCTION_LENGTH, getAvailableTime } = require('../helpers/seeder-helpers');
+const { User, Enrollment } = require('../models')
+const { fn, Op, col } = require('sequelize')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -47,6 +49,27 @@ module.exports = {
         updatedAt: new Date()
       }))
     ])
+
+    // 更新 seed students 學習時數
+    const studentsToUpdate = await User.findAll({
+      where: {
+        role: 'user'
+      }
+    })
+
+    for (const student of studentsToUpdate) {
+      const studyData = await Enrollment.findAll({
+        raw: true,
+        nest: true,
+        attributes: [[fn('sum', col('spendTime')), 'studyHours']],
+        where: {
+          studentId: student.dataValues.id,
+        }
+      })
+      student.studyHours = Number(studyData[0].studyHours)
+      await student.save()
+    }
+
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('Enrollments', {})
