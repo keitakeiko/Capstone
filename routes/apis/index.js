@@ -1,19 +1,20 @@
 const router = require('express').Router()
 
 const admin = require('./modules/admin')
-const auth = require('./modules/auth')
 const classes = require('./modules/classes')
 const enrollments = require('./modules/enrollments')
 const users = require('./modules/users')
+const {
+  authenticatedAdmin,
+  authenticated
+}
+  = require('../../middleware/api-auth')
 
 
-// router.use('/admin', admin)
-// router.use('/auth', auth)
-// router.use('/classes', classes)
-// router.use('/enrollments', enrollments)
+router.use('/admin', authenticatedAdmin, admin)
+router.use('/classes', authenticated, classes)
+router.use('/enrollments', authenticated, enrollments)
 router.use('/users', users)
 
-
-router.get('/', (req, res) => res.send('This is home page.'))
 
 module.exports = router
