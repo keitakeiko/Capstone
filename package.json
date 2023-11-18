@@ -23,7 +23,7 @@
     "express-session": "^1.17.3",
     "faker": "^4.1.0",
     "imgur": "^1.0.2",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
     "moment": "^2.29.4",
     "multer": "^1.4.3",
@@ -31,7 +31,7 @@
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
-    "passport-jwt": "^4.0.1",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1"

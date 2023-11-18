@@ -2,6 +2,9 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const bcrypt = require('bcryptjs')
+const passportJWT = require('passport-jwt')
+const JWTStrategy = passportJWT.Strategy
+const ExtractJWT = passportJWT.ExtractJwt
 
 const { User } = require('../models')
 
@@ -60,6 +63,20 @@ passport.use(new FacebookStrategy({
   }
 }))
 
+const jwtOptions = {
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET
+}
+passport.use(new JWTStrategy(jwtOptions,
+  async (jwtPayload, cb) => {
+    try {
+      const user = await User.findByPk(jwtPayload.id)
+      return cb(null, user)
+    } catch (err) {
+      return cb(err, false)
+    }
+  }))
+
 // serialize and deserialize user
 passport.serializeUser(async (user, cb) => {
   try {
@@ -75,9 +92,8 @@ passport.deserializeUser(async (id, cb) => {
       nest: true,
       attributes: ['id', 'name', 'email', 'account', 'nation', 'avatar', 'aboutMe', 'role']
     })
-    // delete user.password
 
-    return cb(null, user.toJSON())
+    return cb(null, user)
   } catch (err) {
     return cb(err, false)
   }

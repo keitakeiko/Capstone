@@ -5,6 +5,7 @@ const { today } = require('../../helpers/time-helpers')
 const { BCRYPT_SALT_LENGTH } = process.env
 const { imgurFileHandler } = require('../../helpers/file-helpers')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
   signUp: async (req, res, next) => {
@@ -80,23 +81,16 @@ module.exports = {
 
   signIn: async (req, res, next) => {
     try {
-      let role = req.user.role
-      let user
 
-      if (req.user.email === 'root@example.com') {
-        role = 'admin'
-        user = req.user.toJSON()
+      const user = req.user.toJSON()
+      const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '30d' })
 
-        // 刪除敏感及不必要資料
-        delete user.password
-        delete user.createdAt
-        delete user.updatedAt
-        return res.json({ status: 'success', message: '登入成功', user })
-      }
+      let role = user.role
+
 
       // 每次使用者登入時先撈學習時數，並存放起來，比每次使用到時，都要從資料庫撈資料的效能好
       if (role === 'user') {
-        const userId = req.user.id
+        const userId = user.id
         const studyHourData = await Enrollment.findAll({
           raw: true,
           nest: true,
@@ -115,11 +109,19 @@ module.exports = {
 
         // 刪除敏感及不必要資料
         user = rawUser.toJSON()
-        delete user.password
-        delete user.createdAt
-        delete user.updatedAt
       }
-      return res.json({ status: 'success', message: '登入成功', user })
+      delete user.password
+      delete user.createdAt
+      delete user.updatedAt
+
+
+      return res.json({
+        status: 'success',
+        data: {
+          token,
+          user
+        }
+      })
     } catch (err) {
       next(err)
     }
@@ -157,13 +159,13 @@ module.exports = {
   },
   userPage: async (req, res, next) => {
     try {
-
       const userId = req.user.id
-
+      let role = req.user.role
       let data
-      const role = req.user.role
 
-      if (req.user.role === 'teacher') {
+      const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1525498128493-380d1990a112?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80'
+
+      if (role === 'teacher') {
 
         data = await User.findByPk(userId, {
           raw: true,
@@ -174,8 +176,8 @@ module.exports = {
                 SELECT AVG(e.score)
                 FROM enrollments e
                 JOIN classes c
-                ON e.classesId = c.id
-                WHERE c.teacherId = ${sequelize.escape(id)}
+                ON e.classId = c.id
+                WHERE c.teacherId = ${sequelize.escape(userId)}
                 AND e.score IS NOT NULL
               )`),
               'avgRating'
@@ -183,41 +185,31 @@ module.exports = {
           ],
           include: { model: Class, attributes: ['introduction'] }
         })
-        data.avgRating = Number(data.avgRating)
+        console.log(data.avgRating)
+        data.avgRating = Number(data.avgRating.toFixed(1))
+
+        return res.status(200).json(data)
 
       } else {
-
-        const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1525498128493-380d1990a112?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80'
-
-        data = await Enrollment.findAll({
+        data = await User.findAll({
           raw: true,
           nest: true,
-          attributes: ['id', [fn('sum', col('spendTime')), 'totalTime']],
-          include: {
-            model: User,
-            attributes: ['id', 'name', 'account', 'avatar']
-          },
-          order: [['totalTime', 'DESC']],
-          group: 'User.id',
+          attributes: ['id', 'name', 'account', 'avatar', 'studyHours'],
           where: {
-            classTime: {
-              [Op.lt]: today.toDate()
-            }
+            role: 'user'
           }
         })
 
-        data.forEach((student, i) => {
-          (student.rank = i + 1)
-          data = data.find(student => student.id === userId)
-        })
+        const rank = data.findIndex(student => student.id === userId) + 1
+
+        data = data.find(student => student.id === userId)
+        data.rank = rank
+
 
         return res.status(200).json(data)
       }
-
-
     } catch (err) {
       return next(err)
     }
   }
-
 }
