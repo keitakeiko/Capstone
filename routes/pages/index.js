@@ -12,7 +12,8 @@ const userController = require('../../controllers/pages/user-controller')
 const {
   authenticated,
   authenticatedAdmin,
-  authenticatedStudent } = require('../../middleware/auth')
+  authenticatedStudent
+} = require('../../middleware/auth')
 const upload = require('../../middleware/multer')
 
 

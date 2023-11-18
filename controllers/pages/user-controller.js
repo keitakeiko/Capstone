@@ -10,11 +10,10 @@ const {
 	tomorrow,
 	nextSunday,
 	fifteenDaysLater,
-	getPeriod,
 	getAvailablePeriod,
-	getClassTime,
-	extraClassTime
+	getClassTime
 } = require('../../helpers/time-helpers')
+const { getOffset, getPagination } = require('../../helpers/pagination-helper')
 
 const { BCRYPT_SALT_LENGTH } = process.env // 取出 string
 
@@ -88,7 +87,7 @@ const userController = {
 			req.flash('success_message', '註冊成功')
 			return res.redirect('/signin')
 		} catch (err) {
-			return next(err)
+			next(err)
 		}
 	},
 	getSignInPage: (req, res, next) => {
@@ -144,6 +143,13 @@ const userController = {
 			const role = req.user?.role
 			const userId = req.user?.id || null
 
+			// pagination
+			const CLASS_LIMIT = 6
+			const RANKING_LIMIT = 10
+			const page = Number(req.query.page) || 1
+			const offset = getOffset(CLASS_LIMIT, page)
+
+			// search
 			const { keyword } = req.query
 			const where = keyword
 				? { name: { [Op.like]: `%${keyword}%` }, role: 'teacher' }
@@ -151,7 +157,7 @@ const userController = {
 
 			const [totalTeacher, totalTimeByStudent] =
 				await Promise.all([
-					User.findAll({ // findAll 出來的是陣列
+					User.findAndCountAll({ // findAll 出來的是陣列
 						nest: true,
 						raw: true,
 						attributes: ['id', 'name', 'avatar', 'nation', 'role', 'aboutMe'],
@@ -159,14 +165,16 @@ const userController = {
 						include: {
 							model: Class,
 							attributes: ['id', 'teacherId', 'teachingStyle']
-						}
+						},
+						limit: CLASS_LIMIT,
+						offset
 					}),
 					User.findAll({
 						raw: true,
 						nest: true,
 						attributes: ['id', 'name', 'avatar', 'studyHours', 'createdAt'],
 						order: [['studyHours', 'DESC']],
-						limit: 10,
+						limit: RANKING_LIMIT,
 						where: { role: 'user' }
 					})
 				])
@@ -175,11 +183,13 @@ const userController = {
 			totalTimeByStudent.forEach((student, index) => (student.ranking = index + 1))
 
 			return res.render('index', {
-				totalTeacher,
+				totalTeacher: totalTeacher.rows,
 				totalTimeByStudent,
 				isSignIn, // 藉此判斷 header 登入或登出
 				role,
-				userId
+				userId,
+				keyword,
+				pagination: getPagination(CLASS_LIMIT, page, totalTeacher.count)
 			})
 		} catch (err) {
 			return next(err)
@@ -623,14 +633,14 @@ const userController = {
 
 
 			const course = await Class.findOne({
+				raw: true,
+				nest: true,
 				where: {
 					id: teacherInfo.Class.id
 				},
 				attributes: [
 					'id',
 					'teacherId',
-					'introduction',
-					'teachingStyle',
 					'spendTime',
 					'availableDay'
 				]
@@ -676,21 +686,7 @@ const userController = {
 			})
 
 
-			const adjustClass = course.toJSON()
-
-
-			// 可選擇上課的時段, return object
-			const availablePeriod = getPeriod(
-				adjustClass.availableDay,
-				scheduledClasses_arr
-			)
-
-
-			// 下拉式選單裡可上課的時段, return array
-			const adjustedAvailablePeriod = getAvailablePeriod(
-				adjustClass.spendTime,
-				availablePeriod
-			)
+			const adjustClass = getAvailablePeriod(course, scheduledClasses_arr)
 
 
 			// modal 彈跳視窗
@@ -703,8 +699,8 @@ const userController = {
 				score: Number(teacherInfo.Class.Enrollments.avgRating).toFixed(1),
 				lessonHistory,
 				availableDay: teacherInfo.Class.availableDay.split(','),
-				adjustedAvailablePeriod,
-				classId: adjustClass.id,
+				adjustClass,
+				classId: teacherInfo.Class.id,
 				modalInfo,
 				role,
 				userId,
@@ -718,6 +714,8 @@ const userController = {
 		try {
 			const studentId = req.user.id
 			const { classId, classTime } = req.body
+			console.log(classId)
+			console.log(classTime)
 			const classTimeInfo = classTime.slice(0, 16) // 2023-11-05 10:28 共 16 位
 			let isSuccess = false
 
