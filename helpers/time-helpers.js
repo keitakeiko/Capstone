@@ -10,13 +10,13 @@ module.exports = {
   fifteenDaysLater: dayjs().add(15, 'day'),
 
   // 計算出學生可選擇的時段
-  getPeriod: (availableDay, scheduledClasses_arr) => {
+  getAvailablePeriod: (classData, scheduledClasses_arr) => {
     const availablePeriod = {}
 
     // 兩周內課程所有時段( 不包含當日 )
     for (let i = 1; i <= 14; i++) {
       //  0 (Sunday) to 6 (Saturday)
-      if (availableDay.includes(dayjs().add(i, 'day').day())) {
+      if (classData.availableDay.includes(dayjs().add(i, 'day').day())) {
         const allTimePeriod = [
           '18:00',
           '18:30',
@@ -49,22 +49,17 @@ module.exports = {
       availablePeriod[reservedDate].splice(index, duration == 30 ? 1 : 2)
     }
 
-    return availablePeriod
-  },
-
-  // 學生預約課程的下拉式選單內容
-  getAvailablePeriod: (spendTime, availablePeriod) => {
     const result_arr = []
     for (const date in availablePeriod) {
       availablePeriod[date].forEach((classTime, i) => {
         if (
-          spendTime === 30 ||
-          (spendTime === 60 &&
+          classData.spendTime === 30 ||
+          (classData.spendTime === 60 &&
             dayjs(classTime, 'HH:mm').add(30, 'minute').format('HH:mm') === availablePeriod[date][i + 1]
           )
         ) {
           const endTime = dayjs(classTime, 'HH:mm').
-            add(spendTime, 'minute')
+            add(classData.spendTime, 'minute')
             .format('HH:mm')
           result_arr.push(`${date} ${classTime} to ${endTime}`)
         }
@@ -74,27 +69,31 @@ module.exports = {
     return result_arr
   },
 
-  // 計算出特定選課時間
-  getClassTime: (classTime, spendTime) => {
-    const formattedClassTime = dayjs(classTime).format('YYYY-MM-DD HH:mm')
-    const endTime = dayjs(classTime).add(spendTime, 'minute').format('HH:mm')
-    return `${formattedClassTime} to ${endTime} `
-    // 2023-10-31 18:00 to 18:30
-  },
 
-  // 計算末段時間是否可選 60 分鐘的課
-  extraClassTime: availablePeriod => {
-    for (const date in availablePeriod) {
-      const validTime = []
-      for (let i = 0; i < availablePeriod[date].length - 1; i++) { // 刪除最後 30 分鐘時段
-        if (
-          dayjs(availablePeriod[date][i], 'HH:mm')
-            .add(30, 'minute')
-            .format('HH:mm') == availablePeriod[date][i + 1]
-        ) validTime.push(availablePeriod[date][i])
-      }
-      availablePeriod[date] = validTime
+  // 計算出選課時間
+  getClassTime: classData => {
+    if (Array.isArray(classData)) {
+      return classData.map(course => {
+        const formattedClassTime = dayjs(course.dataValues.classTime).format(
+          'YYYY-MM-DD HH:mm'
+        )
+        const endTime = dayjs(course.dataValues.classTime)
+          .add(course.dataValues.spendTime, 'm')
+          .format('HH:mm')
+
+        course.dataValues.classTime = formattedClassTime + ' to ' + endTime
+        return course.toJSON()
+        // result: 2023-10-26 18:00 to 18:30
+      })
+    } else {
+      const formattedClassTime = dayjs(classData.classTime).format(
+        'YYYY-MM-DD HH:mm'
+      )
+      const endTime = dayjs(classData.classTime)
+        .add(classData.spendTime, 'minute')
+        .format('HH:mm')
+      return `${formattedClassTime} to ${endTime}`
+      // result: 2023-10-26 18:00 to 18:30
     }
-    return availablePeriod
   }
 }
